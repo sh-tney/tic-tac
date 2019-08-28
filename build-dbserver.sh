@@ -20,3 +20,11 @@ echo "GRANT SELECT, INSERT, UPDATE ON tictac_db.* TO 'gameserver'@'%';" | mysql
 # Create user for the web server, with read-only privileges
 echo "CREATE USER 'webserver'@'%' IDENTIFIED BY 'web_pw';" | mysql
 echo "GRANT SELECT ON tictac_db.* TO 'webserver'@'%';" | mysql
+
+# Allow network access of the database
+sed -i'' -e '/bind-address/s/127.0.0.1/0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+service mysql restart
+
+# Switch to the local (non-root) db user, an run structural setup
+export MYSQL_PWD="db_pw"
+echo "source /vagrant/db-init.sql" | mysql -u dbserver tictac_db
