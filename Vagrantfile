@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
 
     # Runs a shell script from here once the VM has booted, to do our
     # in-house database set-up
-    dbserver.vm.provision "shell", path: "./db/build-dbserver.sh"
+    dbserver.vm.provision "shell", path: "./build-dbserver.sh"
   end
 
   # The webserver configuration
@@ -48,6 +48,6 @@ Vagrant.configure("2") do |config|
 
     # Runs a shell script from here once the VM has booted, to do our
     # in-house set up for the webserver
-    webserver.vm.provision "shell", path: "./web/build-webserver.sh"
+    webserver.vm.provision "shell", path: "./build-webserver.sh"
   end
 end
