@@ -8,7 +8,7 @@
 
 Vagrant.configure("2") do |config|
   # ubuntu/xenial64, a popular box config that will provide us a familiar
-  # linux back-end
+  # ubuntu environment
   config.vm.box = "ubuntu/xenial64"
 
   # The database server configuration
@@ -28,6 +28,26 @@ Vagrant.configure("2") do |config|
     # Runs a shell script from here once the VM has booted, to do our
     # in-house database set-up
     dbserver.vm.provision "shell", path: "./build-dbserver.sh"
+  end
+
+  # The gameserver configuration
+  config.vm.define "gameserver" do |gameserver|
+    # Connect to the internal private network, so that our VMs can talk
+    # to eacohtoher, as well as port forwarding, so that external clients
+    # can interface with the game server from outside the VM.
+    gameserver.vm.hostname = "gameserver"
+    gameserver.vm.network "forwarded_port", guest: 6969, host: 8069
+    gameserver.vm.network "private_network", ip: "192.168.3.11"
+
+    # Setting up a shared folder, for the game files
+    gameserver.vm.synced_folder "./game", "/vagrant",
+      owner: "vagrant",
+      group: "vagrant",
+      mount_options: ["dmode=775,fmode=777"]
+
+    # Runs a shell script from here once the VM has booted, to do our
+    # in-house installation and running of the python source
+    # gameserver.vm.provision "shell", path: "./build-gameserver.sh"
   end
 
   # The webserver configuration
