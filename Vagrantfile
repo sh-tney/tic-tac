@@ -47,7 +47,7 @@ Vagrant.configure("2") do |config|
 
     # Runs a shell script from here once the VM has booted, to do our
     # in-house installation and running of the python source
-    # gameserver.vm.provision "shell", path: "./build-gameserver.sh"
+    gameserver.vm.provision "shell", path: "./build-gameserver.sh"
   end
 
   # The webserver configuration
