@@ -2,6 +2,7 @@ import socket
 import select
 
 import player
+import game
 
 # Establish the server's socket, accepting from any client, and also sets
 #   up the dictionary of sockets & player objects, which the server's socket
@@ -13,12 +14,15 @@ host = '0.0.0.0'
 port = 6969
 addr = (host, port)
 playerList = { server_sock: player.player(server_sock, addr) }
-cmdlist = '!help        - Displays this exact list\n' + \
+gameList = { game.game() }
+cmdlist = '\n!help        - Displays this exact list\n' + \
           '!quit        - Exits and closes your connection safely\n' + \
           '!name [xxxx] - Changes your username to [xxxx]\n' + \
           '!join [game] - Attempts to join a game from the following list\n' + \
           '                 if one exists, or creates a new lobby and waits\n' + \
-          '                 for opponents'
+          '                 for opponents\n' + '\n' + \
+          '     GAME OPTIONS:\n' + \
+          '     chat    - not actually a game, just a simple multi-user chat\n'
 
 def cmdInterpereter(sender: player.player, cmd: str):
     cmd = cmd.lower().split()
@@ -35,9 +39,15 @@ def cmdInterpereter(sender: player.player, cmd: str):
             if len(cmd) > 1:
                 print(sender.name, 'changed their name to', cmd[1])
                 sender.name = cmd[1]
-                sender.sendUpdate('Name changed to', cmd[1])
+                sender.sendUpdate('Name changed to ' + cmd[1])
             else:
                 sender.sendUpdate('Please use the format: "!name [name]"')
+        elif cmd [0] == '!join':
+            if len(cmd) > 1:
+                print(sender.name, 'joining', cmd[1])
+                sender.sendUpdate('Joined ' + cmd[1])
+            else:
+                sender.sendUpdate('Please use the format: "!join [game]"')
         else:
             sender.sendUpdate('Command not recognized, type !help')
 

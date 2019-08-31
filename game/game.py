@@ -1,14 +1,13 @@
 import player
-import game_manager
 
 cmdlist = '!exit    - Exits and closes your connection safely\n' + \
           '!help    - Displays this exact list\n' + \
           'Anything else will be broadcast to the chatroom'
 
 class game:
-    def __init__(self):
-        self.players: [player.player] = []
-        self.type = 'chatroom'
+    def __init__(self, name='chatroom'):
+        self.players = []
+        self.name = name
         self.limit = 0
         self.count = 0
 
