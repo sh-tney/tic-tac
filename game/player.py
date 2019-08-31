@@ -8,7 +8,10 @@ class player:
         name: str=None, 
         state: str=None):
 
-        self.name = name
+        if name is None:
+            self.name = addr
+        else:
+            self.name = name
         self.addr = addr
         self.sock = sock
         self.state = state

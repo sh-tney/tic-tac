@@ -2,7 +2,7 @@ import player
 import game_manager
 
 cmdlist = '!exit    - Exits and closes your connection safely\n' + \
-          '!help    - Displays this exact list' + \
+          '!help    - Displays this exact list\n' + \
           'Anything else will be broadcast to the chatroom'
 
 class game:

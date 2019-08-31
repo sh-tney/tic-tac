@@ -12,22 +12,13 @@ server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 host = '0.0.0.0'
 port = 6969
 addr = (host, port)
-playerList:{socket.socket: player.player} = { server_sock: player.player(server_sock, addr) }
-cmdlist = '!quit    - Exits and closes your connection safely\n' + \
-          '!help    - Displays this exact list'
-
-# A simple broadcasting method, which will send msg to every member
-# of the list of sockets, except for the server's own socket
-def broadcast(targets: [player.player], msg: str):
-    for s in targets:
-        if s.addr != addr:
-            try:
-                s.sendUpdate(msg)
-            except:
-                print('Terminating connection from (broadcasting)', s.addr)
-                s.sock.close()
-                playerList.pop(s.sock)
-                #continue
+playerList = { server_sock: player.player(server_sock, addr) }
+cmdlist = '!help        - Displays this exact list\n' + \
+          '!quit        - Exits and closes your connection safely\n' + \
+          '!name [xxxx] - Changes your username to [xxxx]\n' + \
+          '!join [game] - Attempts to join a game from the following list\n' + \
+          '                 if one exists, or creates a new lobby and waits\n' + \
+          '                 for opponents'
 
 def cmdInterpereter(sender: player.player, cmd: str):
     cmd = cmd.lower().split()
@@ -36,10 +27,17 @@ def cmdInterpereter(sender: player.player, cmd: str):
             sender.sendUpdate('Bye!')
             playerList.pop(sender.sock)
             sender.sock.close()
-            print(sender.addr, 'quit!')
+            print(sender.name, 'quit!')
         elif cmd[0] == '!help':
             sender.sendUpdate(cmdlist)
-            print(sender.addr, 'requested help')
+            print(sender.name, 'requested help')
+        elif cmd[0] == '!name':
+            if len(cmd) > 1:
+                print(sender.name, 'changed their name to', cmd[1])
+                sender.name = cmd[1]
+                sender.sendUpdate('Name changed to', cmd[1])
+            else:
+                sender.sendUpdate('Please use the format: "!name [name]"')
         else:
             sender.sendUpdate('Command not recognized, type !help')
 
