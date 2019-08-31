@@ -30,6 +30,8 @@ def gameJoiner(sender: player.player, join: str):
     if join == 'chat':
         sender.state = 'chatroom'
         gameList[0].addPlayer(sender)
+    else:
+        sender.sendUpdate('Not a recognised game, !help for a list')
 
 def cmdInterpereter(sender: player.player, cmd: str):
     cmd = cmd.lower().split()
@@ -86,7 +88,6 @@ def readTraffic():
                             cmdInterpereter(playerList[sock], data)
                         else:
                             for g in gameList:
-                                print(g.name)
                                 if g.name == playerList[sock].state:
                                     g.updateGame(playerList[sock], data)
                 except:
