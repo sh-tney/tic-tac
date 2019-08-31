@@ -2,15 +2,19 @@ import socket
 
 class player:
     # Default initializers
-    def __init__(self, sock=None, name=None, stat=None):
-        self.name = name
-        self.sock = sock
-        self.stat = stat
+    def __init__(self, 
+        sock: socket.socket, 
+        addr=None, 
+        name: str=None, 
+        state: str=None):
 
-    def sendUpdate(self, update='Updated, No Message'):
+        self.name = name
+        self.addr = addr
+        self.sock = sock
+        self.state = state
+
+    def sendUpdate(self, update='Updated, No Message\n'):
         self.sock.send(update.encode())
 
-    def getReponse(self, buff=1024):
-        data = self.sock.recv(buff)
-        if data:
-            self.sock.send(data.decode().encode())
+    def getReponse(self, buff=4096):
+        return self.sock.recv(buff)
