@@ -1,8 +1,8 @@
 import player
 
-cmdlist = '!exit    - Exits and closes your connection safely\n' + \
+cmdlist = '\n!exit    - Exits the chat, returning to the main menu\n' + \
           '!help    - Displays this exact list\n' + \
-          'Anything else will be broadcast to the chatroom'
+          'Anything else will be broadcast to the chatroom\n'
 
 class game:
     def __init__(self, name='chatroom'):
@@ -15,6 +15,8 @@ class game:
         if (self.count < self.limit) or (self.limit == 0):
             self.players = [self.players, p]
             self.count  = self.count + 1
+            p.sendUpdate('Welcome to Chat!' + cmdlist)
+            print(p.name, 'joined chat')
             return True
         else:
             return False
@@ -24,15 +26,12 @@ class game:
         p.state = None
         return len(self.players)
 
-    def sendUpdate(self, sender: player, cmd: str) -> bool:
-        print(sender.addr, 'sent in chatrooom', cmd)
-        cmd = cmd.lower().split()
-        if cmd:
-            if cmd[0] == '!exit':
-                sender.sendUpdate('Bye!')
-                self.removePlayer(sender)
-            elif cmd[0] == '!help':
-                sender.sendUpdate(cmdlist)
-                print(sender.addr, 'requested help')
-            #else:
-                #nice
+    def updateGame(self, sender: player, cmd: str):
+        if cmd.split()[0] == '!exit':
+            sender.sendUpdate('Bye!')
+            self.removePlayer(sender)
+        elif cmd.split()[0] == '!help':
+            sender.sendUpdate(cmdlist)
+            print(sender.addr, 'requested help')
+        else:
+            print(sender.addr, 'sent in chatrooom', cmd)

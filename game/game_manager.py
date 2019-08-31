@@ -14,7 +14,9 @@ host = '0.0.0.0'
 port = 6969
 addr = (host, port)
 playerList = { server_sock: player.player(server_sock, addr) }
-gameList = { game.game() }
+gameList = []
+gameList.append(game.game())
+
 cmdlist = '\n!help        - Displays this exact list\n' + \
           '!quit        - Exits and closes your connection safely\n' + \
           '!name [xxxx] - Changes your username to [xxxx]\n' + \
@@ -23,6 +25,11 @@ cmdlist = '\n!help        - Displays this exact list\n' + \
           '                 for opponents\n' + '\n' + \
           '     GAME OPTIONS:\n' + \
           '     chat    - not actually a game, just a simple multi-user chat\n'
+
+def gameJoiner(sender: player.player, join: str):
+    if join == 'chat':
+        sender.state = 'chatroom'
+        gameList[0].addPlayer(sender)
 
 def cmdInterpereter(sender: player.player, cmd: str):
     cmd = cmd.lower().split()
@@ -44,8 +51,8 @@ def cmdInterpereter(sender: player.player, cmd: str):
                 sender.sendUpdate('Please use the format: "!name [name]"')
         elif cmd [0] == '!join':
             if len(cmd) > 1:
-                print(sender.name, 'joining', cmd[1])
-                sender.sendUpdate('Joined ' + cmd[1])
+                print(sender.name, 'attempting to join', cmd[1])
+                gameJoiner(sender, cmd[1])
             else:
                 sender.sendUpdate('Please use the format: "!join [game]"')
         else:
@@ -74,9 +81,14 @@ def readTraffic():
                 try:
                     data = (playerList[sock].getResponse())
                     if data:
-                        print(data)
+
                         if playerList[sock].state is None:
                             cmdInterpereter(playerList[sock], data)
+                        else:
+                            for g in gameList:
+                                print(g.name)
+                                if g.name == playerList[sock].state:
+                                    g.updateGame(playerList[sock], data)
                 except:
                     print('Terminating connection from (recieving)', playerList[sock].addr)
                     sock.close()
