@@ -11,20 +11,38 @@ server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 host = '0.0.0.0'
 port = 6969
-socketDict = { server_sock: player.player(server_sock) }
-
-# A simple catch-all function to throw to, ensure that if all else goes
-#   wrong, we at least close the port
-def kill(e):
-    server_sock.close()
-    print('\nSocket closed on crash\n', e)
+addr = (host, port)
+playerList = { server_sock: player.player(server_sock, addr) }
+cmdlist = '!quit    - Exits and closes your connection safely\n' + \
+          '!help    - Displays this exact list'
 
 # A simple broadcasting method, which will send msg to every member
 # of the list of sockets, except for the server's own socket
-def broadcast(players: [player.player], msg: str):
-    for p in players:
-        if p.addr is not None:
-            p.sendUpdate(msg)
+def broadcast(targets: [player.player], msg: str):
+    for s in targets:
+        if s.addr != addr:
+            try:
+                s.sendUpdate(msg)
+            except:
+                print('Terminating connection from (broadcasting)', s.addr)
+                s.sock.close()
+                playerList.pop(s.sock)
+                #continue
+
+def cmdInterpereter(sender: player.player, cmd: str):
+    cmd = cmd.lower().split()
+    if cmd:
+        if cmd[0] == '!quit':
+            sender.sendUpdate('Bye!')
+            playerList.pop(sender.sock)
+            sender.sock.close()
+            print(sender.addr, 'quit!')
+        elif cmd[0] == '!help':
+            sender.sendUpdate(cmdlist)
+            print(sender.addr, 'requested help')
+        else:
+            sender.sendUpdate('Command not recognized, type !help')
+
 
 # Loops through the list of active sockets, including the server itself;
 # On the server socket, the server will accept any incoming connection
@@ -36,26 +54,27 @@ def broadcast(players: [player.player], msg: str):
 #   a the list of commands they were shown on connection. 
 def readTraffic():
     while True:
-        readySockets = select.select(socketDict.keys(), [], [])[0]
+        readySockets = select.select(playerList.keys(), [], [])[0]
         for sock in readySockets:
             if sock == server_sock:
                 s, a = sock.accept()
-                p = player.player(s, a)
-                socketDict[s] = p
+                playerList[s] = player.player(s, a)
                 print('Connection from', a)
-                p.sendUpdate()
+
             else:
                 try:
-                    data = sock.recv(1024)
+                    data = (playerList[sock].getResponse())
                     if data:
-                        broadcast(socketDict.values(), data.decode())
+                        print(data)
+                        if playerList[sock].state is None:
+                            cmdInterpereter(playerList[sock], data)
                 except:
-                    print('Connection lost by', sock)
+                    print('Terminating connection from (recieving)', playerList[sock].addr)
                     sock.close()
-                    socketDict.pop(sock)
-                    continue
+                    playerList.pop(sock)
+                    #continue
 
-server_sock.bind((host, port))
+server_sock.bind(addr)
 server_sock.listen()
-print('Now listening on port', port)
+print('Now listening on port', addr)
 readTraffic()

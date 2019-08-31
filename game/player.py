@@ -13,8 +13,16 @@ class player:
         self.sock = sock
         self.state = state
 
-    def sendUpdate(self, update='Updated, No Message\n'):
-        self.sock.send(update.encode())
+    def fug(self):
+        print('fug')
 
-    def getReponse(self, buff=4096):
-        return self.sock.recv(buff)
+    def sendUpdate(self, update='Updated, No Message\n'):
+        self.sock.send((update + '\n').encode())
+
+    def getResponse(self):
+        data = self.sock.recv(1024)
+        if data:
+            return data.decode()
+        else: 
+            return False
+        
