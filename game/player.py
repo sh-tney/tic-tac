@@ -13,9 +13,6 @@ class player:
         self.sock = sock
         self.state = state
 
-    def fug(self):
-        print('fug')
-
     def sendUpdate(self, update='Updated, No Message\n'):
         self.sock.send((update + '\n').encode())
 

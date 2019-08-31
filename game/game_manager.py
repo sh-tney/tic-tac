@@ -12,7 +12,7 @@ server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 host = '0.0.0.0'
 port = 6969
 addr = (host, port)
-playerList = { server_sock: player.player(server_sock, addr) }
+playerList:{socket.socket: player.player} = { server_sock: player.player(server_sock, addr) }
 cmdlist = '!quit    - Exits and closes your connection safely\n' + \
           '!help    - Displays this exact list'
 
