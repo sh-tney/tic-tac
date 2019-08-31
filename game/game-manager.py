@@ -60,6 +60,7 @@ def readTraffic():
                 s, a = sock.accept()
                 playerList[s] = player.player(s, a)
                 print('Connection from', a)
+                playerList[s].sendUpdate('Welcome to tic-tac, type !help for a list of commands, or !quit to quit')
 
             else:
                 try:
