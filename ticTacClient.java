@@ -25,7 +25,7 @@ class ticTacClient{
        
        //North area, where the user will connect
        JPanel northPanel = new JPanel();       
-       addressField = new JTextField(33);
+       addressField = new JTextField(34);
        portField = new JTextField(5);
        connectButton = new JButton("Connect");
        addressField.setText("127.0.0.1");
@@ -44,7 +44,7 @@ class ticTacClient{
 
        //South area, with the message field and send button
        JPanel southPanel = new JPanel();
-       messageField = new JTextField(42);
+       messageField = new JTextField(40);
        sendButton = new JButton("Enter");
        messageField.setEnabled(false);
        sendButton.setEnabled(false);
@@ -57,8 +57,8 @@ class ticTacClient{
        frame.getContentPane().add(BorderLayout.SOUTH, southPanel);
        frame.setVisible(true);
 
-       connectButton.setMnemonic(KeyEvent.VK_ENTER);
        connectButton.addActionListener(connect());
+       sendButton.addActionListener(send());
        
     }
 
@@ -73,6 +73,8 @@ class ticTacClient{
                 catch(Exception ex) { textBox.append("Couldn't connect\n"); return; }
                 portField.setEnabled(false);
                 addressField.setEnabled(false);
+                messageField.setEnabled(true);
+                sendButton.setEnabled(true);
                 connectButton.setText("Leave");
                 connectButton.removeActionListener(this);
                 connectButton.addActionListener(leave());
@@ -87,16 +89,37 @@ class ticTacClient{
             public void actionPerformed(ActionEvent e) {
                 try {
                     sock.getOutputStream().write("!leave".getBytes());
+                    sock.getOutputStream().flush();
                     sock.getOutputStream().write("!quit".getBytes());
+                    sock.getOutputStream().flush();
                     sock.close();
+                    sock = null;
                 } catch(Exception ex) {
-                    //Nothing, we're leaving, this is probably fine
+                    textBox.append(ex.getMessage());
                 }
                 portField.setEnabled(true);
                 addressField.setEnabled(true);
+                messageField.setEnabled(false);
+                sendButton.setEnabled(false);
                 connectButton.setText("Connect");
                 connectButton.removeActionListener(this);
                 connectButton.addActionListener(connect());
+            }
+        };
+    }
+
+    public static ActionListener send(){
+        return new ActionListener(){
+        
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    sock.getOutputStream().write(messageField.getText().getBytes());
+                    sock.getOutputStream().flush();
+                } catch(Exception ex) {
+                    textBox.append(ex.getMessage());
+                }
+                messageField.setText("");
             }
         };
     }
