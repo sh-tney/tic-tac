@@ -32,7 +32,7 @@ class game:
     def updateGame(self, sender: player.player, cmd: str):
         if cmd[0] == '!':
             if cmd.split()[0] == '!leave':
-                sender.sendUpdate('Bye, sending you back to the main menu!')
+                sender.sendUpdate('SERVER: Bye, sending you back to the main menu!')
                 self.removePlayer(sender)
             elif cmd.split()[0] == '!help':
                 sender.sendUpdate(cmdlist)
@@ -43,6 +43,6 @@ class game:
                 sender.sendUpdate('\n')
                 print(sender.name, 'requested chatroom list')
             else:
-                sender.sendUpdate('Command not recognized, try !help for a list')
+                sender.sendUpdate('SERVER: Command not recognized, try !help for a list')
         else:
             self.updatePlayers(self.players, str(sender.name) + ': ' + cmd)

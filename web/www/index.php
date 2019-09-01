@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <p>this is some sample text</p>
-        <form action="/index.php" method='post'>
+        <form action="/menu.php" method='post'>
             Change your username here:<br>
-            <input type="text" name="username"> <input type="submit" value="Change">
-        </form>
+            <input type="text" name="username" value="defaultUser"> 
+            <input type="submit" value="Change">
+        </form><br>
+        
     </body>
 </html> 

@@ -36,7 +36,7 @@ def gameJoiner(sender: player.player, join: str):
             joined = True
             break
     if not joined:
-        sender.sendUpdate('Not a recognised game, !help for a list')
+        sender.sendUpdate('SERVER: Not a recognised game, !help for a list')
 
 def cmdInterpereter(sender: player.player, cmd: str):
     cmd = cmd.lower().split()
@@ -53,17 +53,17 @@ def cmdInterpereter(sender: player.player, cmd: str):
             if len(cmd) > 1:
                 print(sender.name, 'changed their name to', cmd[1])
                 sender.name = cmd[1]
-                sender.sendUpdate('Name changed to ' + cmd[1])
+                sender.sendUpdate('SERVER: Name changed to ' + cmd[1])
             else:
-                sender.sendUpdate('Please use the format: "!name [name]"')
+                sender.sendUpdate('SERVER: Please use the format: "!name [name]"')
         elif cmd [0] == '!join':
             if len(cmd) > 1:
                 print(sender.name, 'attempting to join', cmd[1])
                 gameJoiner(sender, cmd[1])
             else:
-                sender.sendUpdate('Please use the format: "!join [game]"')
+                sender.sendUpdate('SERVER: Please use the format: "!join [game]"')
         else:
-            sender.sendUpdate('Command not recognized, type !help')
+            sender.sendUpdate('SERVER: Command not recognized, type !help')
 
 def killPlayer(p: player.player, e: Exception=None):
     print('Terminating player:', p.name)
@@ -99,7 +99,7 @@ def readTraffic():
                 s, a = sock.accept()
                 playerList[s] = player.player(s, a)
                 print('Connection from', a)
-                playerList[s].sendUpdate('Welcome to tic-tac, type !help for a list of commands, or !quit to quit')
+                playerList[s].sendUpdate('SERVER: Welcome to tic-tac, type !help for a list of commands, or !quit to quit')
 
             else:
                 try:
