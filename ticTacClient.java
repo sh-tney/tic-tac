@@ -5,17 +5,17 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Scanner;
-
 import javax.swing.*;
 import javax.swing.event.*;
+
 class ticTacClient{
 
     static Socket sock;
     static int port;
     static Thread thread;
-    static ActionEventListener connector = connect();
-    static ActionEventListener leaver = leave();
-    static ActionEventListener sender = send();
+    static ActionListener connector = connect();
+    static ActionListener leaver = leave();
+    static ActionListener sender = send();
 
     static JButton connectButton;
     static JTextField addressField;
@@ -99,7 +99,6 @@ class ticTacClient{
         connectButton.setText("Connect");
         connectButton.removeActionListener(leaver);
         connectButton.addActionListener(connector);
-        thread.stop();
     }
 
     public static ActionListener leave(){
@@ -110,12 +109,8 @@ class ticTacClient{
                 try {
                     sock.getOutputStream().write("!leave".getBytes());
                     sock.getOutputStream().flush();
-                    wait(50);
                     sock.getOutputStream().write("!quit".getBytes());
                     sock.getOutputStream().flush();
-                    wait(50);
-                    sock.close();
-                    sock = null;
                 } catch(Exception ex) {
                     textBox.append(ex.getMessage());
                 }
@@ -153,6 +148,8 @@ class ticTacClient{
                     textBox.append(ex.getMessage());
                 } finally {
                     in.close();
+                    resetUI();
+                    textBox.append("Exited");
                 }
             } catch(Exception ex) {
                 textBox.append(ex.getMessage());

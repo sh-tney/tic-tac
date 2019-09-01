@@ -3,6 +3,7 @@ import select
 import time
 import player
 import game
+import sys
 
 player_list = []
 game_list = {}
@@ -112,7 +113,7 @@ def main():
                     p = player.player(s, a)
                     print('Connection from', a)
                     player_list.append(p)
-                    p.sendUpdate('Hello from Server\n')
+                    p.sendUpdate('Welcome!\n' + cmdlist)
 
                 else:                       # Otherwise, recieve client message
 
@@ -131,6 +132,8 @@ def main():
                         print(p.name, "connection died")
                         purge(p)
                         continue
+        
+        sys.stdout.flush()   # Flushing every loop, so we can live view the log
 
 if __name__ == '__main__':
     main()
