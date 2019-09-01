@@ -93,7 +93,15 @@ def killPlayer(p: player.player, e: Exception=None):
 #   a the list of commands they were shown on connection. 
 def readTraffic():
     while True:
-        readySockets = select.select(playerList.keys(), [], [])[0]
+        readySockets, writeChecks, errors = select.select(playerList.keys(), playerList.keys(), [])
+        for p in playerList.values():
+            if p.addr == addr:
+                continue
+            if p.sock not in writeChecks:
+                print(p.name, "socket inactive, purging")
+                killPlayer(p)
+                if p.sock in readySockets:
+                    readySockets.remove(p.sock)
         for sock in readySockets:
             if sock == server_sock:
                 s, a = sock.accept()
@@ -111,7 +119,11 @@ def readTraffic():
                         else:
                             for g in gameList:
                                 if g.name == playerList[sock].state:
-                                    g.updateGame(playerList[sock], data)
+                                    kill = g.updateGame(playerList[sock], data)
+                                    if kill:
+                                        for x in kill:
+                                            killPlayer(x)
+
                 except Exception as e:
                     killPlayer(playerList[sock], e)
                     continue

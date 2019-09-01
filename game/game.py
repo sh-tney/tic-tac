@@ -11,23 +11,32 @@ class game:
         self.name = name
         self.count = 0
 
-    def addPlayer(self, p: player):
+    def addPlayer(self, p: player) -> [player.player]:
         self.players.append(p)
         self.count  = self.count + 1
         p.sendUpdate('\nWelcome to Chat!' + cmdlist)
         print(p.name, 'joined chat')
-        self.updatePlayers(self.players, str(p.name)  + ' joined!')
+        return self.updatePlayers(self.players, str(p.name)  + ' joined!')
 
-    def removePlayer(self, p: player.player):
+    def removePlayer(self, p: player.player) -> [player.player]:
         self.players.remove(p)
         self.count = self.count - 1
         p.state = None
         print(p.name, 'left chat')
-        self.updatePlayers(self.players, str(p.name) + ' left!')
+        return self.updatePlayers(self.players, str(p.name) + ' left!')
 
-    def updatePlayers(self, targets: [player.player], msg: str):
+    def updatePlayers(self, targets: [player.player], msg: str) -> [player.player]:
+        kills = []
         for p in targets:
-            p.sendUpdate(msg)
+            try:
+                p.sendUpdate(msg)
+            except Exception as e:
+                print("Error updating player:", p.name)
+                print("Sending up chain to purge:", e)
+                kills.append(p)
+                continue
+        return kills
+
 
     def updateGame(self, sender: player.player, cmd: str):
         if cmd[0] == '!':
@@ -45,4 +54,4 @@ class game:
             else:
                 sender.sendUpdate('SERVER: Command not recognized, try !help for a list')
         else:
-            self.updatePlayers(self.players, str(sender.name) + ': ' + cmd)
+            return self.updatePlayers(self.players, str(sender.name) + ': ' + cmd)
