@@ -14,6 +14,7 @@ host = '0.0.0.0'
 port = 6969
 addr = (host, port)
 playerList = { server_sock: player.player(server_sock, addr) }
+
 gameList = []
 gameList.append(game.game())
 
@@ -24,13 +25,17 @@ cmdlist = '\n!help        - Displays this exact list\n' + \
           '                 if one exists, or creates a new lobby and waits\n' + \
           '                 for opponents\n' + '\n' + \
           '     GAME OPTIONS:\n' + \
-          '     chat    - not actually a game, just a simple multi-user chat\n'
+          '     chat    - not actually a game, just a simple multi-user chat\n\n'
 
 def gameJoiner(sender: player.player, join: str):
-    if join == 'chat':
-        sender.state = 'chatroom'
-        gameList[0].addPlayer(sender)
-    else:
+    joined = False
+    for g in gameList:
+        if join == g.name:
+            sender.state = g.name
+            g.addPlayer(sender)
+            joined = True
+            break
+    if not joined:
         sender.sendUpdate('Not a recognised game, !help for a list')
 
 def cmdInterpereter(sender: player.player, cmd: str):
@@ -60,6 +65,23 @@ def cmdInterpereter(sender: player.player, cmd: str):
         else:
             sender.sendUpdate('Command not recognized, type !help')
 
+def killPlayer(p: player.player, e: Exception):
+    print('Terminating player:', p.name)
+    print('Error:', e)
+    try:
+        for g in gameList:
+            if g.name == p.state:
+                g.removePlayer(p)
+    except Exception as e:
+        ('Error while removing player from game:\n' + e)
+    try:
+        playerList.pop(p.sock)
+    except Exception as e:
+        ('Error while removing player from list:\n' + e)
+    try: 
+        p.sock.close()
+    except Exception as e:
+        ('Error while closing player socket:\n' + e)
 
 # Loops through the list of active sockets, including the server itself;
 # On the server socket, the server will accept any incoming connection
@@ -90,11 +112,9 @@ def readTraffic():
                             for g in gameList:
                                 if g.name == playerList[sock].state:
                                     g.updateGame(playerList[sock], data)
-                except:
-                    print('Terminating connection from (recieving)', playerList[sock].addr)
-                    sock.close()
-                    playerList.pop(sock)
-                    #continue
+                except Exception as e:
+                    killPlayer(playerList[sock], e)
+                    continue
 
 server_sock.bind(addr)
 server_sock.listen()
