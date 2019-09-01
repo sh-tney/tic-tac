@@ -13,7 +13,7 @@ if (isset($_COOKIE['cookie']))
         <input type="text" name="username"> 
         <input type="submit" value="Go!">
     </form>
-    <?php
+    <?php 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = "gay";
         $username = htmlspecialchars(stripcslashes(trim($_POST["username"])));
@@ -37,7 +37,7 @@ if (isset($_COOKIE['cookie']))
         } else {
             echo "<p id=error>Invalid username</p>";
         }
-    }
+    } 
     ?>
 </body>
 </html> 
