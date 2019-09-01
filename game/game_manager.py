@@ -65,7 +65,7 @@ def cmdInterpereter(sender: player.player, cmd: str):
         else:
             sender.sendUpdate('Command not recognized, type !help')
 
-def killPlayer(p: player.player, e: Exception):
+def killPlayer(p: player.player, e: Exception=None):
     print('Terminating player:', p.name)
     print('Error:', e)
     try:
