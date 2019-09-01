@@ -3,8 +3,8 @@ import select
 import time
 import player
 
-server_addr = ('0.0.0.0', 6969)
 player_list = []
+game_list = []
 cmdlist = '\n!help        - Displays this exact list\n' +\
           '!quit        - Exits and closes your connection safely\n' +\
           '!name [xxxx] - Changes your username to [xxxx]\n' +\
@@ -37,6 +37,19 @@ def purge(p: player.player):
     except:
         print("Couldn't delete player")
 
+def gameJoiner(s: player.player, join: str):
+    joined = False
+    for g in game_list:       # Switch through the list of availble game lobbies
+        if join == g.name:          # If the one you were looking for, go there
+            s.state = g.name
+            g.addPlayer(s)
+            joined = True
+            print("Success")
+            break
+    if not joined:                                          # If not, try again
+        print("Unsuccessful")
+        s.sendUpdate('SERVER: Not a recognised game, !help for a list\n')
+
 def cmdInterpereter(s: player.player, cmd: str):
     cmd = cmd.lower().split()       # Split up the string so that it's readable
     if cmd:
@@ -60,8 +73,8 @@ def cmdInterpereter(s: player.player, cmd: str):
 
         elif cmd [0] == '!join':                                 # Join a lobby
             if len(cmd) > 1:
-                print(sender.name, 'attempting to join', cmd[1])
-                gameJoiner(sender, cmd[1])
+                print(s.name, 'attempting to join', cmd[1])
+                gameJoiner(s, cmd[1])
             else:
                 s.sendUpdate('SERVER: Please use the format: "!join [game]"\n')
 
@@ -72,6 +85,7 @@ def main():
 
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_addr = ('0.0.0.0', 6969)
     server_sock.bind(server_addr)
     server_sock.listen()
     print("Listening on", server_addr)
@@ -82,14 +96,10 @@ def main():
 
         for p in player_list:    # Loop through sockets, selecting individually
 
-            try:
-                read = select.select([p.sock], [], [], 1)[0]
-            except:
-                print("List ordering error", p.name)
-                continue
+            read = select.select([p.sock], [], [], 1)[0]
 
-            print(p.name, len(read))        # Some nice diagnostics to look at
-            time.sleep(3)
+            #print(p.name, len(read))        # Some nice diagnostics to look at
+            #time.sleep(3)
 
             for r in read:  # Searching one socket at a time, we know the owner
 
@@ -104,13 +114,11 @@ def main():
 
                     try:
                         dat = r.recv(8192).decode()
-                        print("decoded ok")
                         if dat == "":              # Check if connection closed
                             print(p.name, "connection closed")
                             purge(p)
                         else:                      # Otherwise, handle normally
                             if p.state is None:
-                                print("print cmd")
                                 cmdInterpereter(p, dat)
                             else:
                                 #Game handle
