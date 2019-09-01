@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
     # to eacohtoher, as well as port forwarding, so that external clients
     # can interface with the game server from outside the VM.
     gameserver.vm.hostname = "gameserver"
-    gameserver.vm.network "forwarded_port", guest: 6969, host: 8069
+    gameserver.vm.network "forwarded_port", guest: 6969, host: 6969
     gameserver.vm.network "private_network", ip: "192.168.3.11"
 
     # Setting up a shared folder, for the game files

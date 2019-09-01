@@ -11,18 +11,19 @@ class game:
         self.name = name
         self.count = 0
 
-    def addPlayer(self, p: player) -> bool:
+    def addPlayer(self, p: player):
         self.players.append(p)
         self.count  = self.count + 1
         p.sendUpdate('\nWelcome to Chat!' + cmdlist)
         print(p.name, 'joined chat')
-        return True
+        self.updatePlayers(self.players, str(p.name)  + ' joined!')
 
-    def removePlayer(self, p: player.player) -> int:
+    def removePlayer(self, p: player.player):
         self.players.remove(p)
         self.count = self.count - 1
         p.state = None
-        return len(self.players)
+        print(p.name, 'left chat')
+        self.updatePlayers(self.players, str(p.name) + ' left!')
 
     def updatePlayers(self, targets: [player.player], msg: str):
         for p in targets:

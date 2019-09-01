@@ -72,16 +72,16 @@ def killPlayer(p: player.player, e: Exception):
         for g in gameList:
             if g.name == p.state:
                 g.removePlayer(p)
-    except Exception as e:
-        ('Error while removing player from game:\n' + e)
+    except Exception as ex1:
+        print('Error while removing player from game:\n', ex1)
     try:
         playerList.pop(p.sock)
-    except Exception as e:
-        ('Error while removing player from list:\n' + e)
+    except Exception as ex2:
+        print('Error while removing player from list:\n', ex2)
     try: 
         p.sock.close()
-    except Exception as e:
-        ('Error while closing player socket:\n' + e)
+    except Exception as ex3:
+        print('Error while closing player socket:\n', ex3)
 
 # Loops through the list of active sockets, including the server itself;
 # On the server socket, the server will accept any incoming connection
