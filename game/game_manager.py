@@ -3,6 +3,7 @@ import select
 
 import player
 import game
+import nblock
 
 # Establish the server's socket, accepting from any client, and also sets
 #   up the dictionary of sockets & player objects, which the server's socket

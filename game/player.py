@@ -16,15 +16,6 @@ class player:
         self.sock = sock
         self.state = state
 
-    def sendUpdate(self, update='Updated, No Message\n'):
-        if update[-1] != '\n':
-            update = update + '\n'
+    def sendUpdate(self, update: str):
         self.sock.send((update).encode())
-
-    def getResponse(self):
-        data = self.sock.recv(1024)
-        if data:
-            return data.decode()
-        else: 
-            return False
         
