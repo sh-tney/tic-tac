@@ -1,6 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.Scanner;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -8,6 +12,10 @@ class ticTacClient{
 
     static Socket sock;
     static int port;
+    static Thread thread;
+    static ActionEventListener connector = connect();
+    static ActionEventListener leaver = leave();
+    static ActionEventListener sender = send();
 
     static JButton connectButton;
     static JTextField addressField;
@@ -57,9 +65,8 @@ class ticTacClient{
        frame.getContentPane().add(BorderLayout.SOUTH, southPanel);
        frame.setVisible(true);
 
-       connectButton.addActionListener(connect());
+       connectButton.addActionListener(connector);
        sendButton.addActionListener(send());
-       
     }
 
     public static ActionListener connect(){
@@ -76,10 +83,23 @@ class ticTacClient{
                 messageField.setEnabled(true);
                 sendButton.setEnabled(true);
                 connectButton.setText("Leave");
-                connectButton.removeActionListener(this);
-                connectButton.addActionListener(leave());
+                connectButton.removeActionListener(connector);
+                connectButton.addActionListener(leaver);
+                thread = new Thread(new Receiver());
+                thread.start();
             }
         };
+    }
+
+    public static void resetUI(){
+        portField.setEnabled(true);
+        addressField.setEnabled(true);
+        messageField.setEnabled(false);
+        sendButton.setEnabled(false);
+        connectButton.setText("Connect");
+        connectButton.removeActionListener(leaver);
+        connectButton.addActionListener(connector);
+        thread.stop();
     }
 
     public static ActionListener leave(){
@@ -90,20 +110,16 @@ class ticTacClient{
                 try {
                     sock.getOutputStream().write("!leave".getBytes());
                     sock.getOutputStream().flush();
+                    wait(50);
                     sock.getOutputStream().write("!quit".getBytes());
                     sock.getOutputStream().flush();
+                    wait(50);
                     sock.close();
                     sock = null;
                 } catch(Exception ex) {
                     textBox.append(ex.getMessage());
                 }
-                portField.setEnabled(true);
-                addressField.setEnabled(true);
-                messageField.setEnabled(false);
-                sendButton.setEnabled(false);
-                connectButton.setText("Connect");
-                connectButton.removeActionListener(this);
-                connectButton.addActionListener(connect());
+                resetUI();
             }
         };
     }
@@ -118,9 +134,29 @@ class ticTacClient{
                     sock.getOutputStream().flush();
                 } catch(Exception ex) {
                     textBox.append(ex.getMessage());
+                    resetUI();
                 }
                 messageField.setText("");
             }
         };
+    }
+
+    public static class Receiver implements Runnable {
+        public void run() {
+            try {
+                Scanner in = new Scanner(sock.getInputStream());
+                try {
+                    while(in.hasNextLine()){
+                        textBox.append(in.nextLine() + "\n");
+                    }
+                } catch(Exception ex) {
+                    textBox.append(ex.getMessage());
+                } finally {
+                    in.close();
+                }
+            } catch(Exception ex) {
+                textBox.append(ex.getMessage());
+            }
+        }
     }
 }
