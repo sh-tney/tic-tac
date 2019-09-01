@@ -9,6 +9,15 @@ class ticTacClient{
     static Socket sock;
     static int port;
 
+    static JButton connectButton;
+    static JTextField addressField;
+    static JTextField portField;
+
+    static JTextArea textBox;
+
+    static JTextField messageField;
+    static JButton sendButton;
+
     public static void main(String args[]){
        JFrame frame = new JFrame("tic-tac");
        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -16,9 +25,9 @@ class ticTacClient{
        
        //North area, where the user will connect
        JPanel northPanel = new JPanel();       
-       JTextField addressField = new JTextField(33);
-       JTextField portField = new JTextField(5);
-       JButton connectButton = new JButton("Connect");
+       addressField = new JTextField(33);
+       portField = new JTextField(5);
+       connectButton = new JButton("Connect");
        addressField.setText("127.0.0.1");
        portField.setText("6969");
        northPanel.add(addressField);
@@ -27,7 +36,7 @@ class ticTacClient{
 
        //The main area of text
        JPanel centerPanel = new JPanel();  
-       JTextArea textBox = new JTextArea(30, 47);
+       textBox = new JTextArea(30, 47);
        JScrollPane scrollPane = new JScrollPane(textBox);
        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
        textBox.setEditable(false);
@@ -35,8 +44,8 @@ class ticTacClient{
 
        //South area, with the message field and send button
        JPanel southPanel = new JPanel();
-       JTextField messageField = new JTextField(42);
-       JButton sendButton = new JButton("Enter");
+       messageField = new JTextField(42);
+       sendButton = new JButton("Enter");
        messageField.setEnabled(false);
        sendButton.setEnabled(false);
        southPanel.add(messageField);
@@ -55,6 +64,8 @@ class ticTacClient{
 
     public static ActionListener connect(){
         return new ActionListener(){
+
+            @Override
             public void actionPerformed(ActionEvent e) {
                 try { port = Integer.parseInt(portField.getText()); }
                 catch(Exception ex) { textBox.append("Invalid Port\n"); return; }
@@ -64,7 +75,28 @@ class ticTacClient{
                 addressField.setEnabled(false);
                 connectButton.setText("Leave");
                 connectButton.removeActionListener(this);
-                connectButton.addActionListener(new ActionListener());
+                connectButton.addActionListener(leave());
+            }
+        };
+    }
+
+    public static ActionListener leave(){
+        return new ActionListener(){
+        
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    sock.getOutputStream().write("!leave".getBytes());
+                    sock.getOutputStream().write("!quit".getBytes());
+                    sock.close();
+                } catch(Exception ex) {
+                    //Nothing, we're leaving, this is probably fine
+                }
+                portField.setEnabled(true);
+                addressField.setEnabled(true);
+                connectButton.setText("Connect");
+                connectButton.removeActionListener(this);
+                connectButton.addActionListener(connect());
             }
         };
     }
