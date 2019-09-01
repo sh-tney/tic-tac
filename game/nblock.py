@@ -3,12 +3,7 @@ import select
 import player
 import time
 
-server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_addr = ('0.0.0.0', 6969)
-server_sock.bind(server_addr)
-server_sock.listen()
-print("Listening")
 
 def purge(p: player.player):
     print('Purging player', p.name)
@@ -33,52 +28,44 @@ def purge(p: player.player):
     except:
         print("Couldn't delete player")
 
-player_list = [ player.player(server_sock, server_addr) ]
-while True:
+def main():
 
-    for p in player_list:   # Loop through sockets, checking reads individually
-        read = select.select([p.sock], [], [], 0)[0]
+    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_sock.bind(server_addr)
+    server_sock.listen()
+    print("Listening on", server_addr)
 
-        print(p.name, len(read))            # Some nice diagnostics to look at
-        time.sleep(3)
+    player_list = [ player.player(server_sock, server_addr) ]
 
-        for r in read:  # Searching one socket max, therefore we know the owner
+    while True:
 
-            if r == server_sock:                  # Accept incoming connections
-                s, a = server_sock.accept()
-                print('Connection from', a)
-                player_list.append(player.player(s, a))
-                s.send('Hello from Server\n'.encode())
+        for p in player_list:    # Loop through sockets, selecting individually
+            read = select.select([p.sock], [], [], 0)[0]
 
-            else:                           # Otherwise, recieve client message
-                data = r.recv(8192)
-                try:
-                    if data.decode() == "":# Recieveing null, connection closed
-                        print(p.name, "connection closed")
+            #print(p.name, len(read))        # Some nice diagnostics to look at
+            #time.sleep(3)
+
+            for r in read:  # Searching one socket at a time, we know the owner
+
+                if r == server_sock:              # Accept incoming connections
+                    s, a = server_sock.accept()
+                    print('Connection from', a)
+                    player_list.append(player.player(s, a))
+                    s.send('Hello from Server\n'.encode())
+
+                else:                       # Otherwise, recieve client message
+                    data = r.recv(8192)
+                    try:
+                        if data.decode() == "":        # Checkconnection closed
+                            print(p.name, "connection closed")
+                            purge(p)
+                        else:                      # Otherwise, handle normally
+                            #print(data.decode())
+                    except:                             # Connection died, kill
+                        print(p.name, "connection died")
                         purge(p)
-                    else:                          # Otherwise, handle normally
-                        print(data.decode())
-                except:                                 # Connection died, kill
-                    print(p.name, "connection died")
-                    purge(p)
-                    continue
-                    
+                        continue
 
-    """    
-    for r in read:
-        if r == server_sock:
-            s, a = server_sock.accept()
-            print('Connection from', a)
-            player_list.append(s)
-            s.send('Hello from Server\n'.encode())
-        else:
-            print("hi")
-            data = r.recv(8192)
-            print(data)
-            try:
-                if data.decode() == "":
-                    print(r, "dead")
-                    purge(r)
-            except:
-                purge(r)
-"""
+if __name__ == '__main__':
+    main()
