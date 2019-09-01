@@ -2,9 +2,10 @@ import socket
 import select
 import time
 import player
+import game
 
 player_list = []
-game_list = []
+game_list = {}
 cmdlist = '\n!help        - Displays this exact list\n' +\
           '!quit        - Exits and closes your connection safely\n' +\
           '!name [xxxx] - Changes your username to [xxxx]\n' +\
@@ -16,6 +17,10 @@ cmdlist = '\n!help        - Displays this exact list\n' +\
 
 def purge(p: player.player):
     print('Purging player', p.name)
+    try: 
+        game_list[p.state].removePlayer(p)
+    except:
+        print("Player couldn't be removed from", p.state)
     try:
         player_list.remove(p)
     except:
@@ -39,14 +44,12 @@ def purge(p: player.player):
 
 def gameJoiner(s: player.player, join: str):
     joined = False
-    for g in game_list:       # Switch through the list of availble game lobbies
-        if join == g.name:          # If the one you were looking for, go there
-            s.state = g.name
-            g.addPlayer(s)
-            joined = True
-            print("Success")
-            break
-    if not joined:                                          # If not, try again
+    try:
+        game_list[join].addPlayer(s)                        # Simply look it up
+        s.state = join
+        joined = True
+        print("Success")
+    except:                                                 # If not, try again
         print("Unsuccessful")
         s.sendUpdate('SERVER: Not a recognised game, !help for a list\n')
 
@@ -91,12 +94,13 @@ def main():
     print("Listening on", server_addr)
 
     player_list.append(player.player(server_sock, server_addr))
+    game_list['chat'] = game.game()
 
     while True:
 
         for p in player_list:    # Loop through sockets, selecting individually
 
-            read = select.select([p.sock], [], [], 1)[0]
+            read = select.select([p.sock], [], [], 0)[0]
 
             #print(p.name, len(read))        # Some nice diagnostics to look at
             #time.sleep(3)
@@ -121,8 +125,7 @@ def main():
                             if p.state is None:
                                 cmdInterpereter(p, dat)
                             else:
-                                #Game handle
-                                print("Game handler")
+                                game_list[p.state].updateGame(p, dat)
                                 
                     except:                             # Connection died, kill
                         print(p.name, "connection died")

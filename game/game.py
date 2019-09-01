@@ -11,47 +11,48 @@ class game:
         self.name = name
         self.count = 0
 
-    def addPlayer(self, p: player) -> [player.player]:
+    def addPlayer(self, p: player):               # Append, Increment, Announce
         self.players.append(p)
         self.count  = self.count + 1
-        p.sendUpdate('\nWelcome to Chat!' + cmdlist)
+        p.sendUpdate('\nWelcome to chat!' + cmdlist)
         print(p.name, 'joined chat')
-        return self.updatePlayers(self.players, str(p.name)  + ' joined!')
+        self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 
-    def removePlayer(self, p: player.player) -> [player.player]:
+    def removePlayer(self, p: player.player):         # Remove, State, Accounce
         self.players.remove(p)
         self.count = self.count - 1
         p.state = None
         print(p.name, 'left chat')
-        return self.updatePlayers(self.players, str(p.name) + ' left!')
+        self.updatePlayers(self.players, str(p.name) + ' left!\n')
 
-    def updatePlayers(self, targets: [player.player], msg: str) -> [player.player]:
-        kills = []
+    def updatePlayers(self, targets: [player.player], msg: str): # Tell targets
         for p in targets:
             try:
                 p.sendUpdate(msg)
-            except Exception as e:
-                print("Error updating player:", p.name)
-                print("Sending up chain to purge:", e)
-                kills.append(p)
+            except:    # Don't worry if someone's dead, manager will pick it up
+                print("Error updating", p.name)
                 continue
-        return kills
 
 
-    def updateGame(self, sender: player.player, cmd: str):
-        if cmd[0] == '!':
-            if cmd.split()[0] == '!leave':
-                sender.sendUpdate('SERVER: Bye, sending you back to the main menu!')
-                self.removePlayer(sender)
-            elif cmd.split()[0] == '!help':
-                sender.sendUpdate(cmdlist)
-                print(sender.name, 'requested help')
-            elif cmd.split()[0] == '!users':
+    def updateGame(self, s: player.player, cmd: str):
+        if cmd[0] == '!':                     # Check if there's a command flag
+
+            if cmd.split()[0] == '!leave':                    # Say bye, remove
+                s.sendUpdate('SERVER: Sending you back to the main menu!\n')
+                self.removePlayer(s)
+
+            elif cmd.split()[0] == '!help':                      # Display list
+                s.sendUpdate(cmdlist)
+                print(s.name, 'requested help')
+
+            elif cmd.split()[0] == '!users':    # Display list of users in chat
                 for p in self.players:
-                    sender.sendUpdate(' - ' + str(p.name))
-                sender.sendUpdate('\n')
-                print(sender.name, 'requested chatroom list')
-            else:
-                sender.sendUpdate('SERVER: Command not recognized, try !help for a list')
-        else:
-            return self.updatePlayers(self.players, str(sender.name) + ': ' + cmd)
+                    s.sendUpdate('\n - ' + str(p.name))
+                s.sendUpdate('\n\n')
+                print(s.name, 'requested chat user list')
+
+            else:  # We're assuming anything starting with "!" is a cmd attempt
+                s.sendUpdate('SERVER: Command not recognized, try !help\n')
+
+        else:                         # Send everyone (including you) a message
+            self.updatePlayers(self.players, str(s.name) + ': ' + cmd + '\n')

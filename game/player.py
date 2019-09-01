@@ -1,7 +1,6 @@
 import socket
 
 class player:
-    # Default initializers
     def __init__(self, 
         sock: socket.socket, 
         addr=None, 
@@ -16,6 +15,7 @@ class player:
         self.sock = sock
         self.state = state
 
-    def sendUpdate(self, update: str):
+    def sendUpdate(self, update: str) -> str:
         self.sock.send((update).encode())
+        return None
         
