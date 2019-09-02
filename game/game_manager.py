@@ -12,8 +12,8 @@ game_list = {       # Add game object inits here, with the appropriate name tag
             'chat': game.game(), 
             'ttt': ttt.tictactoe() 
             }
-
-cmdlist = '\n' +               # Also worth adding the game info to the tooltip
+                               # Also worth adding the game info to the tooltip
+cmdlist = '\n' + \
 '!help        - Displays this exact list\n' + \
 '!quit        - Exits and closes your connection safely\n' + \
 '!name [xxxx] - Changes your username to [xxxx]\n' + \
@@ -118,7 +118,7 @@ def main():
                     p = player.player(s, a)
                     print('Connection from', a)
                     player_list.append(p)
-                    p.sendUpdate('Welcome!\n' + cmdlist)
+                    p.sendUpdate('\n    Welcome!\n' + cmdlist)
 
                 else:                       # Otherwise, recieve client message
 

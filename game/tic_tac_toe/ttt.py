@@ -1,13 +1,16 @@
 import game
 import player
+from tic_tac_toe import tttai
 
 cmdlist = '\n' + \
 '!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
 '!help    - Displays this exact list\n' + \
 '!users   - Displys a list of users in the room\n' + \
-'!play    - Queues you up for a game against an opponent\n\n' + \
+'!playai  - Puts you up against an "unbeatable" bot\n\n' + \
 "   Non-flagged input is considered a game command, if it's a number from 1-9" + \
 '\n\n'
+
+aiBot = tttai.tttai(name='aiBot');
 
 class tictactoe(game.game):
 
@@ -15,7 +18,7 @@ class tictactoe(game.game):
         self.players = []
         self.name = 'ttt'
         self.count = 0
-        self.games = []
+        self.games = {}
 
     def addPlayer(self, p: player.player):        # Append, Increment, Announce
         self.players.append(p)
@@ -28,11 +31,20 @@ class tictactoe(game.game):
         self.players.remove(p)
         self.count = self.count - 1
         p.state = None
-        print(p.name, 'left chat')
+        print(p.name, 'left ttt')
         self.updatePlayers(self.players, str(p.name) + ' left!\n')
 
     def updatePlayers(self, targets: [player.player], msg: str):
         pass
+
+    def createAiGame(self, p: player.player):
+        x = (p, aiBot)
+        print('tuple')
+        self.games[x] = ['\n    1 2 3\n    4 5 6\n    7 8 9\n\n', 0]
+        print('hi')
+        print(self.games[x][0])
+        self.updatePlayers(x, p.name + "(O) vs " + aiBot.name + "(X)!\n")
+        print('asd')
 
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
@@ -50,6 +62,10 @@ class tictactoe(game.game):
                     s.sendUpdate('\n - ' + str(p.name))
                 s.sendUpdate('\n\n')
                 print(s.name, 'requested chat user list')
+
+            elif cmd.split()[0] == '!playai':
+                self.createAiGame(s)
+                print(s.name, 'started a ttt vs ai game')
 
             else:  # We're assuming anything starting with "!" is a cmd attempt
                 s.sendUpdate('SERVER: Command not recognized, try !help\n')

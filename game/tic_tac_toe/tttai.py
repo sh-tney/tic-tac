@@ -1,6 +1,7 @@
 import socket
+import player
 
-class player:
+class tttai(player.player):
     def __init__(self, 
         sock: socket.socket=None, 
         addr=None, 
@@ -16,6 +17,6 @@ class player:
         self.state = state
 
     def sendUpdate(self, update: str) -> str:
-        self.sock.send((update).encode())
+        #self.sock.send((update).encode())
         return None
         
