@@ -5,19 +5,17 @@ cmdlist = '\n!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
           '!help    - Displays this exact list\n' + \
           '!users   - Displys a list of users in the room\n' + \
           '!play    - Queues you up for a game against an opponent\n' + \
-          'Non-flagged inputs are considered game commands, if they are\n' + \
+          '\nNon-flagged inputs are considered game commands, if they are\n' + \
           'a number between 1 and 9\n'
 
 class tictactoe(game.game):
 
-    @Override
     def __init__(self):
         self.players = []
         self.name = 'ttt'
         self.count = 0
         self.games = []
 
-    @Override
     def addPlayer(self, p: player.player):        # Append, Increment, Announce
         self.players.append(p)
         self.count  = self.count + 1
@@ -25,7 +23,6 @@ class tictactoe(game.game):
         print(p.name, 'joined ttt')
         self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 
-    @Override
     def removePlayer(self, p: player.player):         # Remove, State, Accounce
         self.players.remove(p)
         self.count = self.count - 1
@@ -36,7 +33,6 @@ class tictactoe(game.game):
     def updatePlayers(self, targets: [player.player], msg: str):
         pass
 
-    @Override
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
 

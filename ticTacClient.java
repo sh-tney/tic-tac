@@ -36,10 +36,12 @@ class ticTacClient{
        
        //North area, where the user will connect
        JPanel northPanel = new JPanel();       
-       addressField = new JTextField(34);
-       portField = new JTextField(5);
+       addressField = new JTextField(60);
+       portField = new JTextField(6);
        connectButton = new JButton("Connect");
        addressField.setText("127.0.0.1");
+       addressField.setFont(new Font("monospaced", Font.PLAIN, 12));
+       portField.setFont(new Font("monospaced", Font.PLAIN, 12));
        portField.setText("6969");
        northPanel.add(addressField);
        northPanel.add(portField);
@@ -47,9 +49,10 @@ class ticTacClient{
 
        //The main area of text
        JPanel centerPanel = new JPanel();  
-       textBox = new JTextArea(30, 47);
+       textBox = new JTextArea(32, 80);
        JScrollPane scrollPane = new JScrollPane(textBox);
        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+       textBox.setFont(new Font("monospaced", Font.PLAIN, 12));
        DefaultCaret caret = (DefaultCaret)textBox.getCaret();
        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
        textBox.setEditable(false);
@@ -57,7 +60,8 @@ class ticTacClient{
 
        //South area, with the message field and send button
        JPanel southPanel = new JPanel();
-       messageField = new JTextField(42);
+       messageField = new JTextField(71);
+       messageField.setFont(new Font("monospaced", Font.PLAIN, 12));
        sendButton = new JButton("Enter");
 
        messageField.setEnabled(false);

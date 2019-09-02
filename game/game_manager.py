@@ -2,11 +2,12 @@ import socket
 import select
 import time
 import player
-import game
 import sys
+import game
+from tic_tac_toe import ttt
 
 player_list = []
-game_list = {}
+game_list = { 'chat': game.game(), 'ttt': ttt.tictactoe() }
 cmdlist = '\n!help        - Displays this exact list\n' +\
           '!quit        - Exits and closes your connection safely\n' +\
           '!name [xxxx] - Changes your username to [xxxx]\n' +\
@@ -95,7 +96,6 @@ def main():
     print("Listening on", server_addr)
 
     player_list.append(player.player(server_sock, server_addr))
-    game_list['chat'] = game.game()
 
     while True:
 

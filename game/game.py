@@ -3,7 +3,7 @@ import player
 cmdlist = '\n!leave   - Leaves the chat, returning to the main menu\n' + \
           '!help    - Displays this exact list\n' + \
           '!users   - Displys a list of users in the room\n' + \
-          'Anything else will be broadcast to the chatroom\n\n'
+          '\nAnything else will be broadcast to the chatroom\n\n'
 
 class game:
     def __init__(self):
