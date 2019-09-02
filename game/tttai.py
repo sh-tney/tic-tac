@@ -18,6 +18,5 @@ class tttai(player.player):
         self.state = state
 
     def sendUpdate(self, update: str) -> str:
-        print(update)
         return str(random.randint(1, 9))
         

@@ -29,6 +29,11 @@ class tictactoe(game.game):
         self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 
     def removePlayer(self, p: player.player):         # Remove, State, Accounce
+        if x = self.findGame(p):
+            self.games.pop(x)
+            x = list(x)
+            x.remove(p)
+            self.updatePlayers(x[0], str(x[0].name) + 'forfeits!\n')
         self.players.remove(p)
         self.count = self.count - 1
         p.state = None
@@ -56,34 +61,87 @@ class tictactoe(game.game):
                 return g
         return None
 
+    def gameEnd(self, x, result: int):
+        print(self.games[x][0])
+        self.updatePlayers(x, self.games[x][0])
+        if result == 2:
+            self.updatePlayers(x, "DRAW!\n")
+            #Draw Script
+        if result == 1:
+            self.updatePlayers(x, str(x[result].name) + "WINS!\n")
+            #p2 Win script
+        if result == 0:
+            self.updatePlayers(x, str(x[result].name) + "WINS\n")
+            #p1 win Script
+        self.games.pop(x)
+
+    def checkWins(self, x) -> bool:
+        grid = (self.games[x][0].split())
+        if grid[0] == grid[1] and grid[1] == grid[2]:              # Horizontal
+            return True
+        if grid[3] == grid[4] and grid[4] == grid[5]:
+            return True
+        if grid[6] == grid[7] and grid[7] == grid[8]:
+            return True
+
+        if grid[0] == grid[3] and grid[3] == grid[6]:                # Vertical
+            return True
+        if grid[1] == grid[4] and grid[4] == grid[7]:
+            return True
+        if grid[2] == grid[5] and grid[5] == grid[8]:
+            return True
+
+        if grid[0] == grid[4] and grid[4] == grid[8]:                # Diagonal
+            return True
+        if grid[2] == grid[4] and grid[4] == grid[6]:
+            return True
+
+        return False                                            # Continue Game
+
     def checkState(self, p, x):
-        #if the game isn't won
-        print('here', x[self.games[x][1]])
-        newP = x[self.games[x][1]]
-        cmd = newP.sendUpdate(self.games[x][0]) 
-        if cmd is not None:
-            self.playerMove(newP, x, cmd)
+
+        q = True
+        for i in self.games[x][0].split():   # This loop just checks for spaces
+            if i.isdigit():
+                q = False                               # If there is, carry on
+
+        if q:                   
+            self.gameEnd(x, 2)                         # If not, it's a draw
+
+        else:
+            if self.checkWins(x):                    # If someone won this turn
+                self.gameEnd(x, x.index(p))           # They must be the winner
+            else:
+                newP = x[self.games[x][1]]  
+                cmd = newP.sendUpdate(self.games[x][0]) 
+                if cmd is not None:
+                    self.playerMove(newP, x, cmd)
 
     def playerMove(self, p, x: (player.player, player.player), cmd: str):
         q = None
         if self.games[x][1] == x.index(p):          # If it's this players turn
+
             i = cmd.split()[0][0]
             if i.isdigit() and i != '0':            # If it's a number from 1-9
+
                 if i in self.games[x][0]:          # If it's not a taken number
+
                     if self.games[x][1] == 0: 
                         self.games[x][0] = self.games[x][0].replace(i, 'O')
                         self.games[x][1] = 1
+
                     else:                             # Flip the current player
                         self.games[x][0] = self.games[x][0].replace(i, 'X')
                         self.games[x][1] = 0
                     self.checkState(p, x)
+
                 else:
                     q = p.sendUpdate("Pick a number that isn't taken\n")
             else:
                 q = p.sendUpdate('Enter a number between 1 and 9\n')
         else:
             p.sendUpdate('Wait your turn!\n')
-        if q is not None:
+        if q is not None:                # This makes sure AI make a valid turn
             self.playerMove(p, x, q)
 
     def updateGame(self, s: player.player, cmd: str):
