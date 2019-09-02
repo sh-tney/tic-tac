@@ -1,5 +1,6 @@
 import socket
 import player
+import random
 
 class tttai(player.player):
     def __init__(self, 
@@ -17,6 +18,6 @@ class tttai(player.player):
         self.state = state
 
     def sendUpdate(self, update: str) -> str:
-        #self.sock.send((update).encode())
-        return None
+        print(update)
+        return str(random.randint(1, 9))
         

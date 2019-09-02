@@ -56,23 +56,35 @@ class tictactoe(game.game):
                 return g
         return None
 
+    def checkState(self, p, x):
+        #if the game isn't won
+        print('here', x[self.games[x][1]])
+        newP = x[self.games[x][1]]
+        cmd = newP.sendUpdate(self.games[x][0]) 
+        if cmd is not None:
+            self.playerMove(newP, x, cmd)
+
     def playerMove(self, p, x: (player.player, player.player), cmd: str):
+        q = None
         if self.games[x][1] == x.index(p):          # If it's this players turn
             i = cmd.split()[0][0]
-            if i.isdigit() and i != '0':              # If it's a number from 1-9
-                if i in self.games[x][0]:            # If it's not a taken number
+            if i.isdigit() and i != '0':            # If it's a number from 1-9
+                if i in self.games[x][0]:          # If it's not a taken number
                     if self.games[x][1] == 0: 
                         self.games[x][0] = self.games[x][0].replace(i, 'O')
                         self.games[x][1] = 1
-                    else:
+                    else:                             # Flip the current player
                         self.games[x][0] = self.games[x][0].replace(i, 'X')
                         self.games[x][1] = 0
+                    self.checkState(p, x)
                 else:
-                    p.sendUpdate("Pick a number that isn't taken\n")
+                    q = p.sendUpdate("Pick a number that isn't taken\n")
             else:
-                p.sendUpdate('Enter a number between 1 and 9\n')
+                q = p.sendUpdate('Enter a number between 1 and 9\n')
         else:
             p.sendUpdate('Wait your turn!\n')
+        if q is not None:
+            self.playerMove(p, x, q)
 
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
@@ -91,9 +103,10 @@ class tictactoe(game.game):
                 s.sendUpdate('\n\n')
                 print(s.name, 'requested chat user list')
 
-            elif cmd.split()[0] == '!playai':
+            elif cmd.split()[0] == '!playai': # Start a game, show p1 the board
                 self.createGame(s, aiBot)
                 print(s.name, 'started a ttt vs ai game')
+                s.sendUpdate(self.games[(s, aiBot)][0])
 
             else:  # We're assuming anything starting with "!" is a cmd attempt
                 s.sendUpdate('SERVER: Command not recognized, try !help\n')
