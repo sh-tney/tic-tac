@@ -56,6 +56,24 @@ class tictactoe(game.game):
                 return g
         return None
 
+    def playerMove(self, p, x: (player.player, player.player), cmd: str):
+        if self.games[x][1] == x.index(p):          # If it's this players turn
+            i = cmd.split()[0][0]
+            if i.isdigit() and i != '0':              # If it's a number from 1-9
+                if i in self.games[x][0]:            # If it's not a taken number
+                    if self.games[x][1] == 0: 
+                        self.games[x][0] = self.games[x][0].replace(i, 'O')
+                        self.games[x][1] = 1
+                    else:
+                        self.games[x][0] = self.games[x][0].replace(i, 'X')
+                        self.games[x][1] = 0
+                else:
+                    p.sendUpdate("Pick a number that isn't taken\n")
+            else:
+                p.sendUpdate('Enter a number between 1 and 9\n')
+        else:
+            p.sendUpdate('Wait your turn!\n')
+
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
 
@@ -85,5 +103,6 @@ class tictactoe(game.game):
             if x is None:
                 s.sendUpdate('Type !play to join a game, or !help for help\n')
             else:
+                self.playerMove(s, x, cmd)
 
     
