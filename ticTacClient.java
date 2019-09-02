@@ -6,7 +6,10 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Scanner;
 import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
 import javax.swing.event.*;
+import javax.swing.text.DefaultCaret;
 
 class ticTacClient{
 
@@ -14,8 +17,8 @@ class ticTacClient{
     static int port;
     static Thread thread;
     static ActionListener connector = connect();
-    static ActionListener leaver = leave();
     static ActionListener sender = send();
+    static KeyListener enterer = enter();
 
     static JButton connectButton;
     static JTextField addressField;
@@ -29,7 +32,7 @@ class ticTacClient{
     public static void main(String args[]){
        JFrame frame = new JFrame("tic-tac");
        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       frame.setSize(600, 595);
+       frame.setSize(605, 588);
        
        //North area, where the user will connect
        JPanel northPanel = new JPanel();       
@@ -47,13 +50,16 @@ class ticTacClient{
        textBox = new JTextArea(30, 47);
        JScrollPane scrollPane = new JScrollPane(textBox);
        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+       DefaultCaret caret = (DefaultCaret)textBox.getCaret();
+       caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
        textBox.setEditable(false);
        centerPanel.add(scrollPane);
 
        //South area, with the message field and send button
        JPanel southPanel = new JPanel();
-       messageField = new JTextField(40);
+       messageField = new JTextField(42);
        sendButton = new JButton("Enter");
+
        messageField.setEnabled(false);
        sendButton.setEnabled(false);
        southPanel.add(messageField);
@@ -66,7 +72,28 @@ class ticTacClient{
        frame.setVisible(true);
 
        connectButton.addActionListener(connector);
-       sendButton.addActionListener(send());
+       sendButton.addActionListener(sender);
+       messageField.addKeyListener(enterer);
+    }
+
+    public static KeyListener enter() {
+        return new KeyListener(){
+
+            public void keyTyped(KeyEvent e) {
+                //nothing
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    sendButton.doClick();
+                }
+            }
+
+            public void keyReleased(KeyEvent e) {
+                //nothing
+            }
+        };
     }
 
     public static ActionListener connect(){
@@ -82,9 +109,8 @@ class ticTacClient{
                 addressField.setEnabled(false);
                 messageField.setEnabled(true);
                 sendButton.setEnabled(true);
-                connectButton.setText("Leave");
-                connectButton.removeActionListener(connector);
-                connectButton.addActionListener(leaver);
+                connectButton.setEnabled(false);
+                messageField.requestFocus();
                 thread = new Thread(new Receiver());
                 thread.start();
             }
@@ -96,27 +122,7 @@ class ticTacClient{
         addressField.setEnabled(true);
         messageField.setEnabled(false);
         sendButton.setEnabled(false);
-        connectButton.setText("Connect");
-        connectButton.removeActionListener(leaver);
-        connectButton.addActionListener(connector);
-    }
-
-    public static ActionListener leave(){
-        return new ActionListener(){
-        
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    sock.getOutputStream().write("!leave".getBytes());
-                    sock.getOutputStream().flush();
-                    sock.getOutputStream().write("!quit".getBytes());
-                    sock.getOutputStream().flush();
-                } catch(Exception ex) {
-                    textBox.append(ex.getMessage());
-                }
-                resetUI();
-            }
-        };
+        connectButton.setEnabled(true);
     }
 
     public static ActionListener send(){
@@ -149,7 +155,7 @@ class ticTacClient{
                 } finally {
                     in.close();
                     resetUI();
-                    textBox.append("Exited");
+                    textBox.append("Exited\n");
                 }
             } catch(Exception ex) {
                 textBox.append(ex.getMessage());
