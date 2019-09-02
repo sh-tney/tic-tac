@@ -1,23 +1,31 @@
+import game
 import player
 
-cmdlist = '\n!leave   - Leaves the chat, returning to the main menu\n' + \
+cmdlist = '\n!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
           '!help    - Displays this exact list\n' + \
           '!users   - Displys a list of users in the room\n' + \
-          'Anything else will be broadcast to the chatroom\n\n'
+          '!play    - Queues you up for a game against an opponent\n' + \
+          'Non-flagged inputs are considered game commands, if they are\n' + \
+          'a number between 1 and 9\n'
 
-class game:
+class tictactoe(game.game):
+
+    @Override
     def __init__(self):
         self.players = []
-        self.name = 'chat'
+        self.name = 'ttt'
         self.count = 0
+        self.games = []
 
+    @Override
     def addPlayer(self, p: player.player):        # Append, Increment, Announce
         self.players.append(p)
         self.count  = self.count + 1
-        p.sendUpdate('\nWelcome to chat!' + cmdlist)
-        print(p.name, 'joined chat')
+        p.sendUpdate('\nWelcome to tic-tac-toe!' + cmdlist)
+        print(p.name, 'joined ttt')
         self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 
+    @Override
     def removePlayer(self, p: player.player):         # Remove, State, Accounce
         self.players.remove(p)
         self.count = self.count - 1
@@ -25,15 +33,10 @@ class game:
         print(p.name, 'left chat')
         self.updatePlayers(self.players, str(p.name) + ' left!\n')
 
-    def updatePlayers(self, targets: [player.player], msg: str): # Tell targets
-        for p in targets:
-            try:
-                p.sendUpdate(msg)
-            except:    # Don't worry if someone's dead, manager will pick it up
-                print("Error updating", p.name)
-                continue
+    def updatePlayers(self, targets: [player.player], msg: str):
+        pass
 
-
+    @Override
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
 
@@ -54,5 +57,7 @@ class game:
             else:  # We're assuming anything starting with "!" is a cmd attempt
                 s.sendUpdate('SERVER: Command not recognized, try !help\n')
 
-        else:                         # Send everyone (including you) a message
-            self.updatePlayers(self.players, str(s.name) + ': ' + cmd + '\n')
+        else:                                         # Try to make a game move
+            s.sendUpdate('Type !play to join a game, or !help for help\n')
+
+    
