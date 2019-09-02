@@ -1,12 +1,13 @@
 import game
 import player
 
-cmdlist = '\n!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
-          '!help    - Displays this exact list\n' + \
-          '!users   - Displys a list of users in the room\n' + \
-          '!play    - Queues you up for a game against an opponent\n' + \
-          '\nNon-flagged inputs are considered game commands, if they are\n' + \
-          'a number between 1 and 9\n'
+cmdlist = '\n' + \
+'!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
+'!help    - Displays this exact list\n' + \
+'!users   - Displys a list of users in the room\n' + \
+'!play    - Queues you up for a game against an opponent\n\n' + \
+"   Non-flagged input is considered a game command, if it's a number from 1-9" + \
+'\n\n'
 
 class tictactoe(game.game):
 
@@ -19,7 +20,7 @@ class tictactoe(game.game):
     def addPlayer(self, p: player.player):        # Append, Increment, Announce
         self.players.append(p)
         self.count  = self.count + 1
-        p.sendUpdate('\nWelcome to tic-tac-toe!' + cmdlist)
+        p.sendUpdate('\n   Welcome to tic-tac-toe!\n' + cmdlist)
         print(p.name, 'joined ttt')
         self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 

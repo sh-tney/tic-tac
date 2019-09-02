@@ -4,43 +4,48 @@ import time
 import player
 import sys
 import game
-from tic_tac_toe import ttt
+from tic_tac_toe import ttt        # Import games from subdirectories like this
 
-player_list = []
-game_list = { 'chat': game.game(), 'ttt': ttt.tictactoe() }
-cmdlist = '\n!help        - Displays this exact list\n' +\
-          '!quit        - Exits and closes your connection safely\n' +\
-          '!name [xxxx] - Changes your username to [xxxx]\n' +\
-          '!join [game] - Attempts to join a game from the following list\n' +\
-          '               if one exists, or creates a new lobby and waits\n' +\
-          '                 for opponents\n' + '\n' +\
-          '   GAME OPTIONS:\n' +\
-          '   chat    - not actually a game, just a simple multi-user chat\n\n'
+player_list = []       # Contains player objects, including one for this server
+
+game_list = {       # Add game object inits here, with the appropriate name tag
+            'chat': game.game(), 
+            'ttt': ttt.tictactoe() 
+            }
+
+cmdlist = '\n' +               # Also worth adding the game info to the tooltip
+'!help        - Displays this exact list\n' + \
+'!quit        - Exits and closes your connection safely\n' + \
+'!name [xxxx] - Changes your username to [xxxx]\n' + \
+'!join [game] - Attempts to join a game from the following list:\n\n' + \
+'   GAME OPTIONS:\n' + \
+'   chat - not actually a game, just a simple multi-user chat\n' + \
+'   ttt  - tic-tac-toe\n\n'
 
 def purge(p: player.player):
-    print('Purging player', p.name)
+    print('Purging player', p.name) 
     try: 
-        game_list[p.state].removePlayer(p)
+        game_list[p.state].removePlayer(p)  # Removes p from current game lobby
     except:
         print("Player couldn't be removed from", p.state)
     try:
-        player_list.remove(p)
+        player_list.remove(p)                  # Removes p from the player list
     except:
         print('Player not on list')
     try:
-        p.sock.shutdown()
+        p.sock.shutdown() # Shutdown fails often, but it's nice when it doesn't
     except:
         print('Sock shutdown fail')
     try:
-        p.sock.close()
+        p.sock.close()      # Closing the socket, so the player is disconnected 
     except:
         print('Sock close fail')
     try:
-        del p.sock
+        del p.sock           # Deleting the socket, no wierd reference buggging
     except:
         print("Couldn't delete socket")
     try: 
-        del p
+        del p                                                   # Kills em dead
     except:
         print("Couldn't delete player")
 
