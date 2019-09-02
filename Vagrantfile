@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
     # to eachother, as well as port forwarding, so we can access the sql
     # server from outside (on a guest account with read-only privileges).
     dbserver.vm.hostname = "dbserver"
+    dbserver.vm.network "forwarded_port", guest: 3306, host: 3306
     dbserver.vm.network "private_network", ip: "192.168.2.11"
 
     # Setting up a shared folder, for the database script storage

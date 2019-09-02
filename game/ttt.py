@@ -2,16 +2,31 @@ import socket
 import game
 import player
 import tttai
+import mysql.connector
 
 cmdlist = '\n' + \
 '!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
 '!help    - Displays this exact list\n' + \
 '!users   - Displys a list of users in the room\n' + \
-'!playai  - Puts you up against an "unbeatable" bot\n\n' + \
-"   Non-flagged input is considered a game command, if it's a number from 1-9" + \
+'!playai  - Puts you up against an "unbeatable" bot\n' + \
+'!playpvp - Matches up against a person in the lobby, or waits for one\n\n' +\
+"   Non-flagged input is considered a game command, if it's a number (1-9)" +\
 '\n\n'
 
 aiBot = tttai.tttai(name='aiBot');
+
+mydb = mysql.connector.connect(
+  host="192.168.2.11",
+  user="gameserver",
+  passwd="game_pw",
+  database="tictac_db"
+)
+
+mycursor = mydb.cursor()
+
+mycursor.execute("SELECT * FROM players")
+
+myresult = mycursor.fetchall()
 
 class tictactoe(game.game):
 
@@ -20,6 +35,7 @@ class tictactoe(game.game):
         self.name = 'ttt'
         self.count = 0
         self.games = {}
+        self.waiter = None
 
     def addPlayer(self, p: player.player):        # Append, Increment, Announce
         self.players.append(p)
@@ -29,7 +45,8 @@ class tictactoe(game.game):
         self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 
     def removePlayer(self, p: player.player):         # Remove, State, Accounce
-        if x = self.findGame(p):
+        x = self.findGame(p)
+        if x is not None:
             self.games.pop(x)
             x = list(x)
             x.remove(p)
@@ -74,6 +91,7 @@ class tictactoe(game.game):
             self.updatePlayers(x, str(x[result].name) + "WINS\n")
             #p1 win Script
         self.games.pop(x)
+        self.updatePlayers(x, 'You have been returned to the t-t-t lobby\n')
 
     def checkWins(self, x) -> bool:
         grid = (self.games[x][0].split())
@@ -114,8 +132,11 @@ class tictactoe(game.game):
             else:
                 newP = x[self.games[x][1]]  
                 cmd = newP.sendUpdate(self.games[x][0]) 
-                if cmd is not None:
+                if cmd is not None:            # AI Opponents respond instantly
                     self.playerMove(newP, x, cmd)
+                else:                    # Human opponents take slightly longer
+                    newP.sendUpdate('Your turn!\n')
+                    p.sendUpdate('Waiting for your opponent...\n')
 
     def playerMove(self, p, x: (player.player, player.player), cmd: str):
         q = None
@@ -165,6 +186,18 @@ class tictactoe(game.game):
                 self.createGame(s, aiBot)
                 print(s.name, 'started a ttt vs ai game')
                 s.sendUpdate(self.games[(s, aiBot)][0])
+            
+            elif cmd.split()[0] == '!playpvp':          # Start a game, or wait
+                if self.waiter is not None:    # We could add some kind of ELO?
+                    self.createGame(self.waiter, s)
+                    print('Match betweeen', s.name, 'and', self.waiter.name)
+                    self.waiter.sendUpdate(self.games[(self.waiter, s)][0])
+                    self.waiter.sendUpdate('You first!\n')
+                    s.sendUpdate('Waiting for the opponents turn...\n')
+                    self.waiter = None
+                else:
+                    self.waiter = s                  # This is the waiting part
+                    s.sendUpdate('Waiting for another player to play...\n')
 
             else:  # We're assuming anything starting with "!" is a cmd attempt
                 s.sendUpdate('SERVER: Command not recognized, try !help\n')
