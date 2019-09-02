@@ -1,6 +1,7 @@
+import socket
 import game
 import player
-from tic_tac_toe import tttai
+import tttai
 
 cmdlist = '\n' + \
 '!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
@@ -35,16 +36,17 @@ class tictactoe(game.game):
         self.updatePlayers(self.players, str(p.name) + ' left!\n')
 
     def updatePlayers(self, targets: [player.player], msg: str):
-        pass
+        for p in targets:
+            try:
+                p.sendUpdate(msg)
+            except:    # Don't worry if someone's dead, manager will pick it up
+                print("Error updating", p.name)
+                continue
 
     def createAiGame(self, p: player.player):
         x = (p, aiBot)
-        print('tuple')
         self.games[x] = ['\n    1 2 3\n    4 5 6\n    7 8 9\n\n', 0]
-        print('hi')
-        print(self.games[x][0])
-        self.updatePlayers(x, p.name + "(O) vs " + aiBot.name + "(X)!\n")
-        print('asd')
+        self.updatePlayers(x, str(p.name) + " (O) v " + aiBot.name + " (X)!\n")
 
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag

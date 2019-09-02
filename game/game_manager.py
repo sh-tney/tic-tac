@@ -4,7 +4,7 @@ import time
 import player
 import sys
 import game
-from tic_tac_toe import ttt        # Import games from subdirectories like this
+import ttt        # Import games from subdirectories like this
 
 player_list = []       # Contains player objects, including one for this server
 
