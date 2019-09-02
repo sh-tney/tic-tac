@@ -43,10 +43,18 @@ class tictactoe(game.game):
                 print("Error updating", p.name)
                 continue
 
-    def createAiGame(self, p: player.player):
-        x = (p, aiBot)
+    def createGame(self, p: player.player, p2: player.player):
+        x = (p, p2)
         self.games[x] = ['\n    1 2 3\n    4 5 6\n    7 8 9\n\n', 0]
-        self.updatePlayers(x, str(p.name) + " (O) v " + aiBot.name + " (X)!\n")
+        self.updatePlayers(x, str(p.name) +" (O) v " + str(p2.name) +" (X)!\n")
+
+    def findGame(self, p: player.player) -> (player.player, player.player):
+        for g in self.games.keys():
+            if g[0] == p:
+                return g
+            if g[1] == p:
+                return g
+        return None
 
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
@@ -66,13 +74,16 @@ class tictactoe(game.game):
                 print(s.name, 'requested chat user list')
 
             elif cmd.split()[0] == '!playai':
-                self.createAiGame(s)
+                self.createGame(s, aiBot)
                 print(s.name, 'started a ttt vs ai game')
 
             else:  # We're assuming anything starting with "!" is a cmd attempt
                 s.sendUpdate('SERVER: Command not recognized, try !help\n')
 
         else:                                         # Try to make a game move
-            s.sendUpdate('Type !play to join a game, or !help for help\n')
+            x = self.findGame(s)
+            if x is None:
+                s.sendUpdate('Type !play to join a game, or !help for help\n')
+            else:
 
     
