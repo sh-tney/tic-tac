@@ -29,9 +29,9 @@ def updateLoss(p: player.player):
     result = db_cur.fetchall()
     if len(result) != 0:                  # If this player is already in our db
         for (name, loss) in result:
-            db_cur.execute("UPDATE players SET win=" + str(loss+1) + \
+            db_cur.execute("UPDATE players SET loss=" + str(loss+1) + \
                           " WHERE id='" + name + "'")
-            print(name, "wins updated to", loss+1)
+            print(name, "losses updated to", loss+1)
     else:                                          # Otherwise add a new record
         print("DB record not found for", p.name)
         db_cur.execute("INSERT INTO players VALUES ('" + p.name + "',0,1,0)")
@@ -45,7 +45,7 @@ def updateDraw(p: player.player):
         for (name, draw) in result:
             db_cur.execute("UPDATE players SET draw=" + str(draw+1) + \
                           " WHERE id='" + name + "'")
-            print(name, "wins updated to", draw+1)
+            print(name, "draws updated to", draw+1)
     else:                                          # Otherwise add a new record
         print("DB record not found for", p.name)
         db_cur.execute("INSERT INTO players VALUES ('" + p.name + "',0,0,1)")

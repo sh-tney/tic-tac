@@ -200,4 +200,15 @@ class tictactoe(game.game):
             else:
                 self.playerMove(s, x, cmd)
 
-    
+def main():
+    t = tictactoe()
+    chad = tttai.tttai(name='DEMO_chad')
+    virgil = tttai.tttai(name='DEMO_virgil')
+
+    for i in range(100):
+        t.createGame(chad, virgil)
+        t.updateGame(chad, str(chad.sendUpdate('Start')))
+        
+
+if __name__ == '__main__':
+    main()
