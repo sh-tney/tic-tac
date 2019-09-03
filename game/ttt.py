@@ -159,6 +159,7 @@ class tictactoe(game.game):
             self.playerMove(p, x, q)
 
     def updateGame(self, s: player.player, cmd: str):
+        cmd = cmd.lower()
         if cmd[0] == '!':                     # Check if there's a command flag
 
             if cmd.split()[0] == '!leave':                    # Say bye, remove

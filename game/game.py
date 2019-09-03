@@ -37,7 +37,7 @@ class game:
 
     def updateGame(self, s: player.player, cmd: str):
         if cmd[0] == '!':                     # Check if there's a command flag
-
+            cmd = cmd.lower()
             if cmd.split()[0] == '!leave':                    # Say bye, remove
                 s.sendUpdate('SERVER: Sending you back to the main menu!\n')
                 self.removePlayer(s)
