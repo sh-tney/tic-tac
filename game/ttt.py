@@ -16,35 +16,50 @@ cmdlist = '\n' +\
 aiBot = tttai.tttai(name='aiBot');
 
 class tictactoe(game.game):
+    """An implementation of game, serving as a tictactoe lobby"""
 
     def __init__(self):
+        """Houses neccesary initialization
+
+        Also creates the waiter object, to house players who are waiting for
+        someone else to play a pvp game, and a dictionary setup to store info
+        on all the active games.
+        """
+
         self.players = []
         self.name = 'ttt'
-        self.count = 0
         self.games = {}
         self.waiter = None
 
     def addPlayer(self, p: player.player):        # Append, Increment, Announce
+        """Adds a player to the lobby, with personalized messages"""
+
         self.players.append(p)
-        self.count  = self.count + 1
         p.sendUpdate('\n   Welcome to tic-tac-toe!\n' + cmdlist)
         print(p.name, 'joined ttt')
         self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
 
     def removePlayer(self, p: player.player):         # Remove, State, Accounce
+        """Removes a player from the lobby, checking active games
+
+        Important that we check the active games and remove BOTH players, so
+        that in the event of a disconnect mid-game, the other player isn't just
+        stuck in limbo.
+        """
+
         x = self.findGame(p)
         if x is not None:
             self.games.pop(x)
             x = list(x)
             x.remove(p)
-            self.updatePlayers(x[0], str(x[0].name) + 'forfeits!\n')
         self.players.remove(p)
-        self.count = self.count - 1
         p.state = None
         print(p.name, 'left ttt')
         self.updatePlayers(self.players, str(p.name) + ' left!\n')
 
     def updatePlayers(self, targets: [player.player], msg: str):
+        """Updates all the players on the target list with the msg"""
+
         for p in targets:
             try:
                 p.sendUpdate(msg)
@@ -53,11 +68,20 @@ class tictactoe(game.game):
                 continue
 
     def createGame(self, p: player.player, p2: player.player):
+        """Initializes a game with two players, adding it to the dictionary"""
+
         x = (p, p2)
         self.games[x] = ['\n    1 2 3\n    4 5 6\n    7 8 9\n\n', 0]
         self.updatePlayers(x, str(p.name) +" (O) v " + str(p2.name) +" (X)!\n")
 
     def findGame(self, p: player.player) -> (player.player, player.player):
+        """A handy function to search for the game a player is in, if any
+
+        Returns the two-player tuple that references the game state on the
+        dictionary. Makes sure to check both the p1 and p2 positions, but 
+        doesn't tell which position the player is.
+        """
+
         for g in self.games.keys():
             if g[0] == p:
                 return g
@@ -66,6 +90,8 @@ class tictactoe(game.game):
         return None
 
     def gameEnd(self, x, result: int):
+        """Handles the ending of a game, passing on messages & SQL requests"""
+
         print(self.games[x][0])
         self.updatePlayers(x, self.games[x][0])
 
@@ -82,6 +108,15 @@ class tictactoe(game.game):
         self.updatePlayers(x, 'SERVER: Returned to the ttt lobby\n')
 
     def checkWins(self, x) -> bool:
+        """Checks the gamestate for a win between the two players
+
+        Checking the hard way, if there are three in a row of either side.
+        This assumes that it runs every time a command is fulfilled, and 
+        therefore just returns True (win) or false (not win), assuming that 
+        the returning function understands the most recent player probably
+        won.
+        """
+
         grid = (self.games[x][0].split())
 
         if grid[0] == grid[1] and grid[1] == grid[2]:              # Horizontal
@@ -106,6 +141,13 @@ class tictactoe(game.game):
         return False                                            # Continue Game
 
     def checkState(self, p, x):
+        """Sanitizes game inputs, the main handler for active games
+
+        Goes through the process of actually checking if the game has ended
+        in a draw, or a win, and if not delegates the result to endGame. Also
+        tells the other player it's their turn if not, or in the case of bot
+        opponents, makes the bot move and then passes right back.
+        """
 
         q = True
         for i in self.games[x][0].split():   # This loop just checks for spaces
@@ -128,6 +170,12 @@ class tictactoe(game.game):
                     p.sendUpdate('SERVER: Waiting for your opponent...\n')
 
     def playerMove(self, p, x: (player.player, player.player), cmd: str):
+        """Handles the move checking & sanitizing, before checkState
+
+        Indicates back to the player if they have made an invalid move, and
+        in the case of bots, allows them to recalculate & submit.
+        """
+
         q = None
         if self.games[x][1] == x.index(p):          # If it's this players turn
 
@@ -155,7 +203,12 @@ class tictactoe(game.game):
             self.playerMove(p, x, q)
 
     def updateGame(self, s: player.player, cmd: str):
-        
+        """The entry point of all commands to the ttt lobby
+
+        Handles any relevant commands, and passes on to an active game if
+        applicable.
+        """
+
         if cmd[0] == '!':                     # Check if there's a command flag
             cmd = cmd.lower()
 
@@ -201,6 +254,11 @@ class tictactoe(game.game):
                 self.playerMove(s, x, cmd)
 
 def main():
+    """100 ai v ai games, only for demonstration purposes
+
+    If you don't want this clogging up the database, don't run this.
+    """
+
     t = tictactoe()
     chad = tttai.tttai(name='DEMO_chad')
     virgil = tttai.tttai(name='DEMO_virgil')

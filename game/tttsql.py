@@ -2,6 +2,8 @@ import mysql.connector
 import player
 import sys
 
+"""Establishes a mysql connection, and from there waits for requests"""
+
 mydb = mysql.connector.connect(
   host="192.168.2.11",
   user="gameserver",
@@ -11,6 +13,8 @@ mydb = mysql.connector.connect(
 db_cur = mydb.cursor()
 
 def updateWin(p: player.player):
+    """Either adds 1 to a player's DB win-count, or makes a new player"""
+
     db_cur.execute("SELECT id, win FROM players WHERE id='" + p.name + "'")
     result = db_cur.fetchall()
     if len(result) != 0:                  # If this player is already in our db
@@ -25,6 +29,8 @@ def updateWin(p: player.player):
     mydb.commit()
 
 def updateLoss(p: player.player):
+    """Either adds 1 to a player's DB loss-count, or makes a new player"""
+
     db_cur.execute("SELECT id, loss FROM players WHERE id='" + p.name + "'")
     result = db_cur.fetchall()
     if len(result) != 0:                  # If this player is already in our db
@@ -39,6 +45,8 @@ def updateLoss(p: player.player):
     mydb.commit()
 
 def updateDraw(p: player.player):
+    """Either adds 1 too a player's DB draw-count, or adds a new player"""
+    
     db_cur.execute("SELECT id, loss FROM players WHERE id='" + p.name + "'")
     result = db_cur.fetchall()
     if len(result) != 0:                  # If this player is already in our db
