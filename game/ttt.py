@@ -10,7 +10,7 @@ cmdlist = '\n' +\
 '!users   - Displys a list of users in the room\n' +\
 '!playai  - Puts you up against an "unbeatable" bot\n' +\
 '!playpvp - Matches up against a person in the lobby, or waits for one\n\n' +\
-"   Non-flagged input is considered a game command, if it's a number (1-9)" +\
+"   Once in game, enter a number (1-9) to choose the coorresponding square" +\
 '\n\n'
 
 aiBot = tttai.tttai(name='aiBot');
@@ -79,7 +79,7 @@ class tictactoe(game.game):
             tttsql.updateLoss(x[(result-1)*(-1)])
 
         self.games.pop(x)
-        self.updatePlayers(x, 'You have been returned to the t-t-t lobby\n')
+        self.updatePlayers(x, 'SERVER: Returned to the ttt lobby\n')
 
     def checkWins(self, x) -> bool:
         grid = (self.games[x][0].split())
@@ -124,8 +124,8 @@ class tictactoe(game.game):
                 if cmd is not None:            # AI Opponents respond instantly
                     self.playerMove(newP, x, cmd)
                 else:                    # Human opponents take slightly longer
-                    newP.sendUpdate('Your turn!\n')
-                    p.sendUpdate('Waiting for your opponent...\n')
+                    newP.sendUpdate('SERVER: Your turn!\n')
+                    p.sendUpdate('SERVER: Waiting for your opponent...\n')
 
     def playerMove(self, p, x: (player.player, player.player), cmd: str):
         q = None
@@ -155,8 +155,9 @@ class tictactoe(game.game):
             self.playerMove(p, x, q)
 
     def updateGame(self, s: player.player, cmd: str):
-        cmd = cmd.lower()
+        
         if cmd[0] == '!':                     # Check if there's a command flag
+            cmd = cmd.lower()
 
             if cmd.split()[0] == '!leave':                    # Say bye, remove
                 s.sendUpdate('SERVER: Sending you back to the main menu!\n')

@@ -17,7 +17,7 @@ class game:
         self.count  = self.count + 1
         p.sendUpdate('\n   Welcome to chat!\n' + cmdlist)
         print(p.name, 'joined chat')
-        self.updatePlayers(self.players, str(p.name)  + ' joined!\n')
+        self.updatePlayers(self.players, 'SERVER: '+ str(p.name) +' joined!\n')
 
     def removePlayer(self, p: player.player):         # Remove, State, Accounce
         self.players.remove(p)

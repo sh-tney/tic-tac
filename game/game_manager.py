@@ -1,6 +1,7 @@
 import socket
 import select
 import time
+import re
 import player
 import sys
 import game
@@ -60,34 +61,39 @@ def gameJoiner(s: player.player, join: str):
         print("Unsuccessful")
         s.sendUpdate('SERVER: Not a recognised game, !help for a list\n')
 
-def cmdInterpereter(s: player.player, cmd: str):
-    cmd = cmd.lower().split()       # Split up the string so that it's readable
+def cmdInterpereter(s: player.player, msg: str):
+    cmd = msg.split()[0].lower()    # Split up the string so that it's readable
     if cmd:
-
-        if cmd[0] == '!quit':                # Player quits, say bye then purge
+        if cmd == '!quit':                   # Player quits, say bye then purge
             s.sendUpdate("SERVER: Bye!\n")
             print(s.name, 'quit!')
             purge(s)
 
-        elif cmd[0] == '!help':               # Sends the user the command list
+        elif cmd == '!help':                  # Sends the user the command list
             s.sendUpdate(cmdlist)
             print(s.name, 'requested help')
 
-        elif cmd[0] == '!name':                       # Changes the user's name
-            if len(cmd) > 1:
-                print(s.name, 'changed their name to', cmd[1])
-                s.name = cmd[1]
+        elif cmd == '!name':                          # Changes the user's name
+
+            n = ''                        
+            for x in msg.split()[1:]:                       # Name sanitization
+                n = n + '_' + x              # Replaces spaces with underscores
+            n = re.sub(r'\W+', '', n[1:])           # Remvoes non-alphanumerics
+
+            if len(n) > 0:
+                print(s.name, 'changed their name to', n)
+                s.name = n
                 s.sendUpdate('SERVER: Name changed to ' + s.name + '\n')
             else:
                 s.sendUpdate('SERVER: Please use the format: "!name [name]"\n')
 
-        elif cmd [0] == '!join':                                 # Join a lobby
-            if len(cmd) > 1: 
+        elif cmd == '!join':                                     # Join a lobby
+            if len(msg.split()) > 1: 
                 if s.name == s.addr:    # Force to Choose a name before joining
                     s.sendUpdate('SERVER: Please choose a !name first\n')
                 else:
-                    print(s.name, 'attempting to join', cmd[1])
-                    gameJoiner(s, cmd[1])
+                    print(s.name, 'attempting to join', msg.split()[1].lower())
+                    gameJoiner(s, msg.split()[1].lower())
             else:
                 s.sendUpdate('SERVER: Please use the format: "!join [game]"\n')
 
