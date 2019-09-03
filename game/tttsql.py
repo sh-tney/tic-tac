@@ -1,4 +1,6 @@
 import mysql.connector
+import player
+import sys
 
 mydb = mysql.connector.connect(
   host="192.168.2.11",
@@ -8,14 +10,22 @@ mydb = mysql.connector.connect(
 )
 db_cur = mydb.cursor()
 
-mycursor = mydb.cursor()
+def updateWin(p: str):
+    db_cur.execute("SELECT id, win FROM players WHERE id='" + p.name + "'")
+    result = db_cur.fetchall()
+    if len(result) != 0:                  # If this player is already in our db
+        for (name, win) in result:
+            print(name, win)
+            db_cur.execute("UPDATE players SET win=" + str(win+1) + \
+                          " WHERE id='" + name + "'")
+            print(name, "wins updated to", win+1)
+    else:
+        print("DB record not found for", p.name)
+        db_cur.execute("INSERT INTO players VALUES ('" + p.name + "',1,0,0)")
+        print("Record added")
+    mydb.commit()
 
-mycursor.execute("SELECT * FROM players WHERE id='fug'")
-
-myresult = mycursor.fetchall()
-
-if len(myresult) == 0:
-    print('ey')
-
-for (name, win, loss, draw) in myresult:
-    print(name, win, loss, draw)
+s = sys.stdin.read()
+#print()
+#print(s)
+updateWin(player.player(name=s))
