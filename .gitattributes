@@ -1,0 +1,11 @@
+* text=auto
+
+# Request that on Windows these text files are checked out with Unix
+# line endings. Since Vagrant will share these files directly into the
+# VM, and the VM is running Linux, we don't want the scripts having
+# Windows line endings.
+
+*.sql text eol=lf
+*.conf text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
