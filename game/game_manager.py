@@ -9,6 +9,15 @@ import ttt                         # Import games from subdirectories like this
 
 player_list = []       # Contains player objects, including one for this server
 
+""" 
+
+Developers wanting to expand the game library should do so by adding their game
+objects here, either as a single instance like in the two shown, or potentially
+multiple if one wanted multiple lobbies for any reason. As long as something in
+the list implements all the functions in the game.py file, it should work here.
+Also probably a good idea to add tooltips to the cmdList here too.
+"""
+
 game_list = {       # Add game object inits here, with the appropriate name tag
             'chat': game.game(), 
             'ttt': ttt.tictactoe() 
@@ -24,6 +33,15 @@ cmdlist = '\n' + \
 '   ttt  - tic-tac-toe\n\n'
 
 def purge(p: player.player):
+    """A method to erase this player & their connection
+
+    This removes all the players' known object references, and also closes
+    their connection safely (or at least attempts to). This passes down to
+    the game lobby they are currently housed in, if any, and lets the game's
+    library decide on how best to deal with it, and if needed complete game
+    state calcuations to preserve the game state if needed.
+    """
+
     print('Purging player', p.name) 
     try: 
         game_list[p.state].removePlayer(p)  # Removes p from current game lobby
@@ -51,6 +69,14 @@ def purge(p: player.player):
         print("Couldn't delete player")
 
 def gameJoiner(s: player.player, join: str):
+    """A method that tries to scan the available games for a player to join
+
+    This method simply checks the gameList dictionary for games matching the
+    player's request (always converted to lower-case), and joins the lobby,
+    matching up their state so that commands are passed correctly. On an
+    unsuccessful search, the player is notified."
+    """
+
     joined = False
     try:
         game_list[join].addPlayer(s)                        # Simply look it up
@@ -62,6 +88,16 @@ def gameJoiner(s: player.player, join: str):
         s.sendUpdate('SERVER: Not a recognised game, !help for a list\n')
 
 def cmdInterpereter(s: player.player, msg: str):
+    """A method for handling the users' input when not in any game lobby
+
+    When the game manager recieves a message from a player, and that player
+    isn't in any active lobby, they are assumed to be sendinig a command to
+    here, which it handles. Commands are assumed to always start with a !
+    and are converted to lower case. One can also code in arguments if needed
+    In this implementations, players are required to enter a username before
+    joining any lobbies.
+    """
+
     cmd = msg.split()[0].lower()    # Split up the string so that it's readable
     if cmd:
         if cmd == '!quit':                   # Player quits, say bye then purge
@@ -101,6 +137,18 @@ def cmdInterpereter(s: player.player, msg: str):
             s.sendUpdate('SERVER: Command not recognized, type !help\n')
 
 def main():
+    """Main executable for a gameserver
+
+    This program establishes an open recieving socket at the indicated host 
+    initialized at 0.0.0.0:6969 here. It then enters an infinite loop. 
+    This loop checks for readable sockets every loop, and removes connections
+    that it finds to be closed or otherwise disconnected. Otherwise, hands
+    down the recieved message to the players' current game lobby object, 
+    in the dictionary at the record accorind to their player.state string,
+    or if the player doesn't have a state, it passes on to cmdInterpreter.
+    Also outputs everything here to stdout, and flushes every loop to allow
+    for live log output.
+    """
 
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
