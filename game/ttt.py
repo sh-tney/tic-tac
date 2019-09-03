@@ -2,7 +2,7 @@ import socket
 import game
 import player
 import tttai
-import mysql.connector
+import tttsql
 
 cmdlist = '\n' +\
 '!leave   - Leaves tic-tac-toe, returning to the main menu\n' +\
@@ -14,14 +14,6 @@ cmdlist = '\n' +\
 '\n\n'
 
 aiBot = tttai.tttai(name='aiBot');
-
-#mydb = mysql.connector.connect(
-#  host="192.168.2.11",
-#  user="gameserver",
-#  passwd="game_pw",
-#  database="tictac_db"
-#)
-#db_cur = mydb.cursor()
 
 class tictactoe(game.game):
 
@@ -82,12 +74,15 @@ class tictactoe(game.game):
             #Draw Script
         else:
             self.updatePlayers(x, str(x[result].name) + " WINS!\n")
+            tttsql.updateWin(x[result])
+            tttsql.updateLoss(x[(result-1)*(-1)])
 
         self.games.pop(x)
         self.updatePlayers(x, 'You have been returned to the t-t-t lobby\n')
 
     def checkWins(self, x) -> bool:
         grid = (self.games[x][0].split())
+
         if grid[0] == grid[1] and grid[1] == grid[2]:              # Horizontal
             return True
         if grid[3] == grid[4] and grid[4] == grid[5]:
