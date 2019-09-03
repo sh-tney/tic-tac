@@ -11,8 +11,17 @@ import javax.swing.KeyStroke;
 import javax.swing.event.*;
 import javax.swing.text.DefaultCaret;
 
+/**
+ * A simple client application to host a TCP text connection, connecting to the
+ * specified address and port, closing the connection on closing the app. If
+ * the connection closes from the server side, the client will become inactive
+ * until the user connects to a host again. Once connected, the client acts
+ * as a simple text relayer, sending text when the user presses enter or the
+ * send button, and constantly streaming incoming messages from another thread.
+ */
 class ticTacClient{
 
+    //Some global variables, mostly for housing 
     static Socket sock;
     static int port;
     static Thread thread;
@@ -80,6 +89,10 @@ class ticTacClient{
        messageField.addKeyListener(enterer);
     }
 
+    /**
+     * Returns a new KeyListener event, listening for the enter key press
+     * and then executing a "click" on the send button.
+     */
     public static KeyListener enter() {
         return new KeyListener(){
 
@@ -100,15 +113,29 @@ class ticTacClient{
         };
     }
 
+    /**
+     * This creates the action listener to handle the connect button's function
+     * Attempting to connect to the host, and simply notifying the user if the 
+     * host or port is invalid, or unreachable.
+     */
     public static ActionListener connect(){
         return new ActionListener(){
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                try { port = Integer.parseInt(portField.getText()); }
-                catch(Exception ex) { textBox.append("Invalid Port\n"); return; }
-                try { sock = new Socket(addressField.getText(), port); }
-                catch(Exception ex) { textBox.append("Couldn't connect\n"); return; }
+                try { 
+                    port = Integer.parseInt(portField.getText()); 
+                }
+                catch(Exception ex) { 
+                    textBox.append("Invalid Port\n"); return; 
+                }
+
+                try { 
+                    sock = new Socket(addressField.getText(), port); 
+                }
+                catch(Exception ex) { 
+                    textBox.append("Couldn't connect\n"); return; 
+                }
                 portField.setEnabled(false);
                 addressField.setEnabled(false);
                 messageField.setEnabled(true);
@@ -121,6 +148,10 @@ class ticTacClient{
         };
     }
 
+    /**
+     * Consolidation of the various UI feature changes needed when a connection
+     * is either closed or lost.
+     */
     public static void resetUI(){
         portField.setEnabled(true);
         addressField.setEnabled(true);
@@ -129,6 +160,10 @@ class ticTacClient{
         connectButton.setEnabled(true);
     }
 
+    /**
+     * The listener for the send button, executing the sending of whatever is 
+     * currently in the text box
+     */
     public static ActionListener send(){
         return new ActionListener(){
         
@@ -146,6 +181,12 @@ class ticTacClient{
         };
     }
 
+    /**
+     * A runnable class to be used in a seperate thread, to be constantly
+     * listening and recieving for new messages from the active host. When the
+     * connection closes, and therefore the InputStream reaches end of file, 
+     * socket is closed, and the UI is reset, and then the thread ends.
+     */
     public static class Receiver implements Runnable {
         public void run() {
             try {
