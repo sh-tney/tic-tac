@@ -2,25 +2,44 @@
 <html>
 <head><title>Database test page</title>
 <style>
-th { text-align: left; }
 
-table, th, td {
+header {
+  text-align: center;
+  padding: 20px;
+}
+form {
+  display: block;
+  align: center;
+  margin: 20px;
+}
+p { margin: 20px; }
+th { text-align: left; }
+table { 
+  margin: 20px; 
+}
+table, th, td { 
   border: 2px solid grey;
   border-collapse: collapse;
 }
+th, td { padding: 5px; }
+tr:hover { background-color: #f5f5f5; }
 
-th, td {
-  padding: 0.2em;
-}
 </style>
 </head>
 
+<header>
+  <h1>TicTac Leaderboards & Info Page</h1>
+</header>
+
 <body>
-<h1>Database test page</h1>
 
-<p>Showing contents of papers table:</p>
+<form action="index.php" method="POST">
+  Search by Player Name: <input type="text" name="search">
+  <input type="submit">
+</form>
 
-<table border="1">
+<table>
+
 <tr><th>Players</th>
   <th>Wins</th>
   <th>Losses</th>
@@ -28,11 +47,6 @@ th, td {
   <th>Total</th>
   <th>Winrate</th>
   <th>Score</th></tr>
-
-<form action="index.php" method="POST">
-  Search by Player Name: <input type="text" name="search">
-  <input type="submit">
-</form>
 
 <?php
  
@@ -45,34 +59,47 @@ $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
 $search = "".$_POST['search'];
 
-$q = $pdo->query(
+$q = $pdo->query(   # Pulls all the player's info, and generates useful numbers
   "SELECT ". 
   "id, win, loss, draw, ". 
-  "(win+loss+draw) AS total, ".
-  "((win*2)+draw)/((win+loss+draw)*2)*100 AS winrate, ".
+  "(win+loss+draw) AS total, ".                       # Like total games played
+  "((win*2)+draw)/((win+loss+draw)*2)*100 AS winrate, ".      # Average Winrate
 
   // This is the score/ranking generating method
   // Found at http://www.evanmiller.org/how-not-to-sort-by-average-rating.html
-  "((((win*2)+draw) + 1.9208) / (((win*2)+draw) + loss) - ".
+  "ROUND((((((win*2)+draw) + 1.9208) / (((win*2)+draw) + loss) - ".
   "1.96 * SQRT((((win*2)+draw) * loss) / (((win*2)+draw) + loss) + 0.9604) / ".
-  "(((win*2)+draw) + loss)) / (1 + 3.8416 / (((win*2)+draw) + loss)) ".
+  "(((win*2)+draw) + loss)) / (1 + 3.8416 / (((win*2)+draw) + loss)))*10000) ".
   "AS score ".
 
   "FROM players ".
-  "WHERE id LIKE '%".$search."%'".
+  "WHERE id LIKE '%".$search."%'".           # This just facilitates the search
   "ORDER BY score DESC");
 
-while($row = $q->fetch()){
-  echo "<tr><td>".$row["id"].
-       "</td><td>".$row["win"]."</td>".
+while($row = $q->fetch()){    # This loop just puts all our values on the table
+  echo "<tr>".
+       "<td>".$row["id"]."</td>".
+       "<td>".$row["win"]."</td>".
        "<td>".$row["loss"]."</td>".
        "<td>".$row["draw"]."</td>".
        "<td>".$row["total"]."</td>".
        "<td>".$row["winrate"]."%</td>".
-       "<td>".$row["score"]."</td></tr>\n";
+       "<td>".$row["score"]."</td>".
+       "</tr>\n";
 }
 
 ?>
 </table>
+
+<p> 
+  Read about how this score was generated 
+  <a href="http://www.evanmiller.org/how-not-to-sort-by-average-rating.html"
+   target="_blank">here</a>.
+  <br><br>
+  Play via telnet, or via the java client 
+  (<a href="/files/ticTacClient.jar" target="_blank">Direct Download Link</a>)
+  at </<?php echo $_SERVER['SERVER_ADDR']; ?>, Port 6969
+</p>
+
 </body>
 </html>
