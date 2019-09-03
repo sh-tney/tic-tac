@@ -4,11 +4,11 @@ import player
 import tttai
 import mysql.connector
 
-cmdlist = '\n' + \
-'!leave   - Leaves tic-tac-toe, returning to the main menu\n' + \
-'!help    - Displays this exact list\n' + \
-'!users   - Displys a list of users in the room\n' + \
-'!playai  - Puts you up against an "unbeatable" bot\n' + \
+cmdlist = '\n' +\
+'!leave   - Leaves tic-tac-toe, returning to the main menu\n' +\
+'!help    - Displays this exact list\n' +\
+'!users   - Displys a list of users in the room\n' +\
+'!playai  - Puts you up against an "unbeatable" bot\n' +\
 '!playpvp - Matches up against a person in the lobby, or waits for one\n\n' +\
 "   Non-flagged input is considered a game command, if it's a number (1-9)" +\
 '\n\n'
@@ -82,12 +82,6 @@ class tictactoe(game.game):
             #Draw Script
         else:
             self.updatePlayers(x, str(x[result].name) + " WINS!\n")
-            sql = ("SELECT id, win FROM players WHERE id LIKE = %s")
-            val = (str(x[result].name))
-            result = db_cur.fetchall()
-            print("shid")
-            for i in result:
-                print(i)
 
         self.games.pop(x)
         self.updatePlayers(x, 'You have been returned to the t-t-t lobby\n')

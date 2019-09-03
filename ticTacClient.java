@@ -53,8 +53,8 @@ class ticTacClient{
        JScrollPane scrollPane = new JScrollPane(textBox);
        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
        textBox.setFont(new Font("monospaced", Font.PLAIN, 12));
-       DefaultCaret caret = (DefaultCaret)textBox.getCaret();
-       caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+       //DefaultCaret caret = (DefaultCaret)textBox.getCaret();
+       //caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
        textBox.setEditable(false);
        centerPanel.add(scrollPane);
 
@@ -153,6 +153,7 @@ class ticTacClient{
                 try {
                     while(in.hasNextLine()){
                         textBox.append(in.nextLine() + "\n");
+                        textBox.setCaretPosition(textBox.getDocument().getLength());
                     }
                 } catch(Exception ex) {
                     textBox.append(ex.getMessage());

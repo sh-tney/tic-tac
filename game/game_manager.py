@@ -82,9 +82,12 @@ def cmdInterpereter(s: player.player, cmd: str):
                 s.sendUpdate('SERVER: Please use the format: "!name [name]"\n')
 
         elif cmd [0] == '!join':                                 # Join a lobby
-            if len(cmd) > 1:
-                print(s.name, 'attempting to join', cmd[1])
-                gameJoiner(s, cmd[1])
+            if len(cmd) > 1: 
+                if s.name == s.addr:    # Force to Choose a name before joining
+                    s.sendUpdate('SERVER: Please choose a !name first\n')
+                else:
+                    print(s.name, 'attempting to join', cmd[1])
+                    gameJoiner(s, cmd[1])
             else:
                 s.sendUpdate('SERVER: Please use the format: "!join [game]"\n')
 
