@@ -37,7 +37,8 @@ $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 $q = $pdo->query("SELECT * FROM players");
 
 while($row = $q->fetch()){
-  echo "<tr><td>".$row["name"]."</td><td>".$row["win"]."</td>".$row["loss"]."</td>".$row["draw"]."</td></tr>\n";
+  echo "<tr><td>".$row["id"]."</td><td>".$row["win"]."</td>
+  <td>".$row["loss"]."</td><td>".$row["draw"]."</td></tr>\n";
 }
 
 ?>

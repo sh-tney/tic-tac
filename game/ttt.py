@@ -15,18 +15,13 @@ cmdlist = '\n' + \
 
 aiBot = tttai.tttai(name='aiBot');
 
-mydb = mysql.connector.connect(
-  host="192.168.2.11",
-  user="gameserver",
-  passwd="game_pw",
-  database="tictac_db"
-)
-
-mycursor = mydb.cursor()
-
-mycursor.execute("SELECT * FROM players")
-
-myresult = mycursor.fetchall()
+#mydb = mysql.connector.connect(
+#  host="192.168.2.11",
+#  user="gameserver",
+#  passwd="game_pw",
+#  database="tictac_db"
+#)
+#db_cur = mydb.cursor()
 
 class tictactoe(game.game):
 
@@ -81,15 +76,19 @@ class tictactoe(game.game):
     def gameEnd(self, x, result: int):
         print(self.games[x][0])
         self.updatePlayers(x, self.games[x][0])
+
         if result == 2:
             self.updatePlayers(x, "DRAW!\n")
             #Draw Script
-        if result == 1:
-            self.updatePlayers(x, str(x[result].name) + "WINS!\n")
-            #p2 Win script
-        if result == 0:
-            self.updatePlayers(x, str(x[result].name) + "WINS\n")
-            #p1 win Script
+        else:
+            self.updatePlayers(x, str(x[result].name) + " WINS!\n")
+            sql = ("SELECT id, win FROM players WHERE id LIKE = %s")
+            val = (str(x[result].name))
+            result = db_cur.fetchall()
+            print("shid")
+            for i in result:
+                print(i)
+
         self.games.pop(x)
         self.updatePlayers(x, 'You have been returned to the t-t-t lobby\n')
 
