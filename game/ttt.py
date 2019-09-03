@@ -71,7 +71,8 @@ class tictactoe(game.game):
 
         if result == 2:
             self.updatePlayers(x, "DRAW!\n")
-            #Draw Script
+            tttsql.updateDraw(x[0])
+            tttsql.updateDraw(x[1])
         else:
             self.updatePlayers(x, str(x[result].name) + " WINS!\n")
             tttsql.updateWin(x[result])
