@@ -21,7 +21,11 @@ th, td {
 <p>Showing contents of papers table:</p>
 
 <table border="1">
-<tr><th>Players</th><th>Wins</th><th>Losses</th><th>Draws</th></tr>
+<tr><th>Players</th>
+  <th>Wins</th>
+  <th>Losses</th>
+  <th>Draws</th>
+  <th>Winrate</tr></tr>
 
 <?php
  
@@ -29,16 +33,19 @@ $db_host   = '192.168.2.11';
 $db_name   = 'tictac_db';
 $db_user   = 'webserver';
 $db_passwd = 'web_pw';
-
 $pdo_dsn = "mysql:host=$db_host;dbname=$db_name";
-
 $pdo = new PDO($pdo_dsn, $db_user, $db_passwd);
 
-$q = $pdo->query("SELECT * FROM players");
+$q = $pdo->query(
+  "SELECT ". 
+  "id, win, loss, draw, ". 
+  "((win*2)+draw)/((win+loss+draw)*2)*100 AS winrate".
+  " FROM players");
 
 while($row = $q->fetch()){
-  echo "<tr><td>".$row["id"]."</td><td>".$row["win"]."</td>
-  <td>".$row["loss"]."</td><td>".$row["draw"]."</td></tr>\n";
+  echo "<tr><td>".$row["id"]."</td><td>".$row["win"]."</td>".
+  "<td>".$row["loss"]."</td><td>".$row["draw"]."</td>".
+  "<td>".$row["winrate"]."%</td></tr>\n";
 }
 
 ?>
