@@ -8,12 +8,16 @@ echo "mysql-server mysql-server/root_password password $MYSQL_PWD" | debconf-set
 echo "mysql-server mysql-server/root_password_again password $MYSQL_PWD" | debconf-set-selections
 apt-get -y install mysql-server
 
+#  ************
+#   On release, change all the passwords in here to something more secure
+#  ************
+
 # Now create and initialise the database, and a user with privileges
 echo "CREATE DATABASE tictac_db;" | mysql
 echo "CREATE USER 'dbserver'@'%' IDENTIFIED BY 'db_pw';" | mysql
 echo "GRANT ALL PRIVILEGES ON tictac_db.* TO 'dbserver'@'%';" | mysql
 
-# Create user for the game server, with row-level read/write privilege
+# Create user for the game server, with row-level read/write privileges
 echo "CREATE USER 'gameserver'@'%' IDENTIFIED BY 'game_pw';" | mysql
 echo "GRANT SELECT, INSERT, UPDATE ON tictac_db.* TO 'gameserver'@'%';" | mysql
 
@@ -25,6 +29,8 @@ echo "GRANT SELECT ON tictac_db.* TO 'webserver'@'%';" | mysql
 export MYSQL_PWD="db_pw"
 echo "source /vagrant/db-init.sql" | mysql -u dbserver tictac_db
 
+# This just adds a conveniece option for being able to SSH into the dbserver,
+# and go straight into mysql and start working on things
 echo "[client]
 user=dbserver
 password=db_pw" > /home/vagrant/.my.cnf
