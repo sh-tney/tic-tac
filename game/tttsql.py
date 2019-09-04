@@ -47,7 +47,7 @@ def updateLoss(p: player.player):
 def updateDraw(p: player.player):
     """Either adds 1 too a player's DB draw-count, or adds a new player"""
     
-    db_cur.execute("SELECT id, loss FROM players WHERE id='" + p.name + "'")
+    db_cur.execute("SELECT id, draw FROM players WHERE id='" + p.name + "'")
     result = db_cur.fetchall()
     if len(result) != 0:                  # If this player is already in our db
         for (name, draw) in result:
