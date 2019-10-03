@@ -1,5 +1,5 @@
  # db
- This subdirectory is both the logical place to store all of our database scripts, and also the actual shared volume inside the dbserver vm, which can be accessed via  ```vagrant ssh dbserver```. Once inside the ssh client for the dbserver, you can navigate this shared folder via ```cd /vagrant```, where you should see these exact contents. 
+ This subdirectory is both the logical place to store all of our database scripts, and also the actual shared volume inside the dbserver VM, which can be accessed via  ```vagrant ssh dbserver```. Once inside the ssh client for the dbserver, you can navigate this shared folder via ```cd /vagrant```, where you should see these exact contents. 
  
  Importantly for interacting with the dbserver here, in the *build-dbserver.sh* file in the top directory is where all the account credentials for the dbserver are located, and can be changed, but for easy access I've listed the defaults here. 
  
