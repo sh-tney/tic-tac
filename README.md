@@ -30,3 +30,6 @@ These files are some simple housekeeping for the git project, *.gitignore* was g
  3. webserver
  
 In this order, each VM initialises it's own private network address and port forwarding schemes, which can be altered here, as well as any neccesary file mounting permissions, and then finally runs its own corresponding setup script, found here in the respective *build-xxx.sh*. Editing either *Vagrantfile* or *build-xxx.sh* will likely have impacts on the respective VM, most of which is likely covered in the in-file documentation, or in the readme of the VM's subdirectory.
+
+### Removing the DEMO
+To stop the 100 games from being played automatically at server boot, remove the line ```python3 /vagrant/ttt.py > /home/vagrant/demo.log &``` from *build-gameserver.sh*.
