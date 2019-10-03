@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/java,macos,python,vagrant
 # Edit at https://www.gitignore.io/?templates=java,macos,python,vagrant
 
+### SPECIFIC IGNORING CREDENTIALS
+credentials
+
 ### Java ###
 # Compiled class file
 *.class
