@@ -31,4 +31,5 @@ This file is the simple heart of the vagrant VMs, and is run during the initial 
  1. dbserver (this one comes first, as the other two servers depend on it)
  2. gameserver 
  3. webserver
+ 
 In this order, each VM initialises it's own private network address and port forwarding schemes, which can be altered here, as well as any neccesary file mounting permissions, and then finally runs its own corresponding setup script, found here in the respective build-xxx.sh file.
