@@ -4,6 +4,7 @@
 
 ### SPECIFIC IGNORING CREDENTIALS
 credentials
+vpc
 
 ### Java ###
 # Compiled class file
