@@ -98,7 +98,7 @@ while($row = $q->fetch()){    # This loop just puts all our values on the table
   <br><br>
   Play via telnet, or via the java client 
   (<a href="/files/ticTacClient.jar" target="_blank">Direct Download Link</a>)
-  at </<?php echo $_SERVER['SERVER_ADDR']; ?>, Port 6969
+  at Port 6969
 </p>
 
 </body>
