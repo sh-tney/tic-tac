@@ -29,7 +29,7 @@ class player:
 
         In this case, it dooes just send the string to the player's socket,
         encoded and ready to go, however other implementations like bots may
-        want too handle differently, and the return string is also convenient,
+        want to handle differently, and the return string is also convenient,
         for hosting server-side logic if needed, but otherwise should be left
         as returning None.
         """
