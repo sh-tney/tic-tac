@@ -19,10 +19,12 @@ All you need to get started here is Java
 This section covers the basics of modifying this package. Within the folders you'll find more detailed explanations of their respective VMs and their files in those folders; But here is where we'll discuss the top-level files.
 
 ### .gitignore & .gitattributes
-These files are some simple housekeeping for the git project, .gitignore was generated from https://www.gitignore.io/, notably having been modified to allow uploading jar files (so that the client jar is ready to deploy straight from booting up vagrant). .gitattributes is a neccesity for ensuring all our files that are going to be run inside the VMs always checkout with unix line endings, as they run on an Ubuntu box, regardless of our external OS choices.
+These files are some simple housekeeping for the git project, *.gitignore* was generated from https://www.gitignore.io/, notably having been modified to allow uploading jar files (so that the client jar is ready to deploy straight from booting up vagrant). 
+
+*.gitattributes* is a neccesity for ensuring all our files that are going to be run inside the VMs always checkout with unix line endings, as they run on an Ubuntu box, regardless of our external OS choices.
 
 ### Vagrantfile & build-xxx.sh
-This file is the simple heart of the vagrant VMs, and is run during the initial ```vagrant up```, this builds each VM in the order:
+*Vagrantfile* is the simple heart of the vagrant VMs, and is run during the initial ```vagrant up```, this builds each VM in the follwing order:
  1. dbserver (this one comes first, as the other two servers depend on it)
  2. gameserver 
  3. webserver
