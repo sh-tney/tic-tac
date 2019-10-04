@@ -2,9 +2,10 @@
 # Created by https://www.gitignore.io/api/java,macos,python,vagrant
 # Edit at https://www.gitignore.io/?templates=java,macos,python,vagrant
 
-### SPECIFIC IGNORING CREDENTIALS
+### SPECIFIC IGNORING CREDENTIALS, these are files created in the build process
 credentials
 vpc
+private-subnet
 
 ### Java ###
 # Compiled class file
