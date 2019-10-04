@@ -1,1 +1,0 @@
-tic-tac-db-1.cfcpvj1lhbvf.us-east-1.rds.amazonaws.com

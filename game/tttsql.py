@@ -5,7 +5,7 @@ import sys
 """Establishes a mysql connection, and from there waits for requests"""
 
 mydb = mysql.connector.connect(
-  host="192.168.2.11",
+  host="tic-tac-1.cfcpvj1lhbvf.us-east-1.rds.amazonaws.com",
   user="gameserver",
   passwd="game_pw",
   database="tictac_db"

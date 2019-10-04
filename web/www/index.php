@@ -50,7 +50,7 @@ tr:hover { background-color: #f5f5f5; }
 
 <?php
  
-$db_host   = '192.168.2.11';
+$db_host   = 'tic-tac-1.cfcpvj1lhbvf.us-east-1.rds.amazonaws.com';
 $db_name   = 'tictac_db';
 $db_user   = 'webserver';
 $db_passwd = 'web_pw';
@@ -97,7 +97,7 @@ while($row = $q->fetch()){    # This loop just puts all our values on the table
    target="_blank">here</a>.
   <br><br>
   Play via telnet, or via the java client 
-  (<a href="/files/ticTacClient.jar" target="_blank">Direct Download Link</a>)
+  (<a href="https://tic-tac-client.s3.amazonaws.com/ticTacClient.jar" target="_blank">Direct Download Link</a>)
   at Port 6969
 </p>
 
