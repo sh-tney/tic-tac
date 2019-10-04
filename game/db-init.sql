@@ -11,14 +11,7 @@ GRANT SELECT, INSERT, UPDATE ON tictac_db.* TO 'gameserver'@'%';
 CREATE USER 'webserver'@'%' IDENTIFIED BY 'web_pw';
 GRANT SELECT ON tictac_db.* TO 'webserver'@'%';
 
--- Very simply, creates a new table to house player data
-CREATE TABLE players (
-    id VARCHAR(40),
-    win INT DEFAULT 0 NOT NULL,
-    loss INT DEFAULT 0 NOT NULL,
-    draw INT DEFAULT 0 NOT NULL,
-    PRIMARY KEY (id)
-);
+USE tictac_db;
 
 -- Very simply, creates a new table to house player data
 CREATE TABLE players (

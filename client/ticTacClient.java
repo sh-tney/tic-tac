@@ -48,7 +48,7 @@ class ticTacClient{
        addressField = new JTextField(60);
        portField = new JTextField(6);
        connectButton = new JButton("Connect");
-       addressField.setText("127.0.0.1");
+       addressField.setText("ec2-3-94-209-229.compute-1.amazonaws.com");
        addressField.setFont(new Font("monospaced", Font.PLAIN, 12));
        portField.setFont(new Font("monospaced", Font.PLAIN, 12));
        portField.setText("6969");
