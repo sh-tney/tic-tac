@@ -27,8 +27,8 @@ Vagrant.configure("2") do |config|
     # The region for Amazon Educate is fixed.
     aws.region = "us-east-1" # Only Amazon Educate Region
     aws.availability_zone = "us-east-1a" 
-    aws.subnet_id = "subnet-0f1b75deee2ee34c9"
-    aws.security_groups = ["sg-0740553393896b0b8"] # Open SSH-SG
+    aws.subnet_id = "subnet-032a69b4c8adfce7a"
+    aws.security_groups = ["sg-0474ca855d8035dc7"] # Open-SG
 
     # Choosing the starting software, and mounting materials
     aws.instance_type = "t2.micro"

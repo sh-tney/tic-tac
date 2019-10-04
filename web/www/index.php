@@ -50,7 +50,7 @@ tr:hover { background-color: #f5f5f5; }
 
 <?php
  
-$db_host   = 'tic-tac-1.cfcpvj1lhbvf.us-east-1.rds.amazonaws.com';
+$db_host   = 'tic-tac-db.cfcpvj1lhbvf.us-east-1.rds.amazonaws.com';
 $db_name   = 'tictac_db';
 $db_user   = 'webserver';
 $db_passwd = 'web_pw';

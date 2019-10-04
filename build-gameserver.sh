@@ -5,8 +5,8 @@ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python3 get-pip.py
 python3 -m pip install mysql-connector
 
-# Begin running the game manager
-python3 /vagrant/game_manager.py > /home/vagrant/out.log &
-
-# This runs the DEMO included in ttt, remove this line on release
-python3 /vagrant/ttt.py > /home/vagrant/demo.log &
+# This installs mysql so othat we can use it to run the first script
+export MYSQL_PWD="mysql_root_pw"
+echo "mysql-server mysql-server/root_password password $MYSQL_PWD" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password $MYSQL_PWD" | debconf-set-selections
+apt-get -y install mysql-server
