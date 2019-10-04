@@ -2,6 +2,8 @@
 # Created by https://www.gitignore.io/api/java,macos,python,vagrant
 # Edit at https://www.gitignore.io/?templates=java,macos,python,vagrant
 
+.aws
+
 ### Java ###
 # Compiled class file
 *.class
