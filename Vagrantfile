@@ -1,74 +1,84 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# This Vagrantfile will set up three VMs on an internal network, with 
-# assigned IPs: a webserver to hold the front-end web interface, a 
-# database server to house player & match history data, and a game 
-# server to hold the back end game logic computation & ai opponent hosting
-
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
 Vagrant.configure("2") do |config|
-  # ubuntu/xenial64, a popular box config that will provide us a familiar
-  # ubuntu environment
-  config.vm.box = "ubuntu/xenial64"
+  # Online Vagrantfile documentation is at https://docs.vagrantup.com.
 
-  # The database server configuration
-  config.vm.define "dbserver" do |dbserver|
-    # Connecting to the internal private network, so that our VMs can talk
-    # to eachother, as well as port forwarding, so we can access the sql
-    # server from outside (on a guest account with read-only privileges).
-    dbserver.vm.hostname = "dbserver"
-    dbserver.vm.network "forwarded_port", guest: 3306, host: 3306
-    dbserver.vm.network "private_network", ip: "192.168.2.11"
+  # The AWS provider does not actually need to use a Vagrant box file.
+  config.vm.box = "dummy"
 
-    # Setting up a shared folder, for the database script storage
-    dbserver.vm.synced_folder "./db", "/vagrant",
-      owner: "vagrant",
-      group: "vagrant",
-      mount_options: ["dmode=775,fmode=777"]
+  config.vm.provider :aws do |aws, override|
+    # We will gather the data for these three aws configuration
+    # parameters from environment variables (more secure than
+    # committing security credentials to your Vagrantfile).
+    #
+    # aws.access_key_id = "YOUR KEY"
+    # aws.secret_access_key = "YOUR SECRET KEY"
+    # aws.session_token = "SESSION TOKEN"
 
-    # Runs a shell script from here once the VM has booted, to do our
-    # in-house database set-up
-    dbserver.vm.provision "shell", path: "./build-dbserver.sh"
+    # The region for Amazon Educate is fixed.
+    aws.region = "us-east-1"
+
+    # These options force synchronisation of files to the VM's
+    # /vagrant directory using rsync, rather than using trying to use
+    # SMB (which will not be available by default).
+    override.nfs.functional = false
+    override.vm.allowed_synced_folder_types = :rsync
+
+    # Following the lab instructions should lead you to provide values
+    # appropriate for your environment for the configuration variable
+    # assignments preceded by double-hashes in the remainder of this
+    # :aws configuration section.
+
+    # The keypair_name parameter tells Amazon which public key to use.
+    ##aws.keypair_name = ""
+    # The private_key_path is a file location in your macOS account
+    # (e.g., ~/.ssh/something).
+    ##override.ssh.private_key_path = ""
+
+    # Choose your Amazon EC2 instance type (t2.micro is cheap).
+    ##aws.instance_type = "t2.micro"
+
+    # You need to indicate the list of security groups your VM should
+    # be in. Each security group will be of the form "sg-...", and
+    # they should be comma-separated (if you use more than one) within
+    # square brackets.
+    #
+    ##aws.security_groups = [""]
+
+    # For Vagrant to deploy to EC2 for Amazon Educate accounts, it
+    # seems that a specific availability_zone needs to be selected
+    # (will be of the form "us-east-1a"). The subnet_id for that
+    # availability_zone needs to be included, too (will be of the form
+    # "subnet-...").
+    ##aws.availability_zone = ""
+    ##aws.subnet_id = ""
+
+    # You need to chose the AMI (i.e., hard disk image) to use. This
+    # will be of the form "ami-...".
+    # 
+    # If you want to use Ubuntu Linux, you can discover the official
+    # Ubuntu AMIs: https://cloud-images.ubuntu.com/locator/ec2/
+    #
+    # You need to get the region correct, and the correct form of
+    # configuration (probably amd64, hvm:ebs-ssd, hvm).
+    #
+    ##aws.ami = ""
+
+    # If using Ubuntu, you probably also need to uncomment the line
+    # below, so that Vagrant connects using username "ubuntu".
+    ##override.ssh.username = "ubuntu"
   end
 
-  # The gameserver configuration
-  config.vm.define "gameserver" do |gameserver|
-    # Connect to the internal private network, so that our VMs can talk
-    # to eacohtoher, as well as port forwarding, so that external clients
-    # can interface with the game server from outside the VM.
-    gameserver.vm.hostname = "gameserver"
-    gameserver.vm.network "forwarded_port", guest: 6969, host: 6969
-    gameserver.vm.network "private_network", ip: "192.168.3.11"
-
-    # Setting up a shared folder, for the game files
-    gameserver.vm.synced_folder "./game", "/vagrant",
-      owner: "vagrant",
-      group: "vagrant",
-      mount_options: ["dmode=775,fmode=777"]
-
-    # Runs a shell script from here once the VM has booted, to do our
-    # in-house installation and running of the python source
-    gameserver.vm.provision "shell", path: "./build-gameserver.sh"
-  end
-
-  # The webserver configuration
-  config.vm.define "webserver" do |webserver|
-    # Connect to the internal private network, so that our VMs can talk
-    # to eachother, as well as port forwarding, so we can actually see 
-    # the web interface from outside the VM, available publically, for
-    # example via http://127.0.0.1:8080 locally.
-    webserver.vm.hostname = "webserver"
-    webserver.vm.network "forwarded_port", guest: 80, host: 8080
-    webserver.vm.network "private_network", ip: "192.168.4.11"
-
-    # Setting up a shared folder, for the webserver's assets
-    webserver.vm.synced_folder "./web", "/vagrant", 
-      owner: "vagrant", 
-      group: "vagrant", 
-      mount_options: ["dmode=775,fmode=777"]
-
-    # Runs a shell script from here once the VM has booted, to do our
-    # in-house set up for the webserver
-    webserver.vm.provision "shell", path: "./build-webserver.sh"
-  end
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+  # SHELL
 end
