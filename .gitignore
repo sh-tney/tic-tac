@@ -4,8 +4,6 @@
 
 ### SPECIFIC IGNORING CREDENTIALS, these are files created in the build process
 credentials
-vpc
-private-subnet
 
 ### Java ###
 # Compiled class file
